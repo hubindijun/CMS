@@ -82,11 +82,11 @@ const pageTitle = computed(() => {
 })
 
 function handleProfile() {
-  Message.info('个人中心功能开发中')
+  router.push('/profile')
 }
 
 function handleChangePassword() {
-  Message.info('修改密码功能开发中')
+  router.push({ path: '/profile', query: { tab: 'password' } })
 }
 
 function handleLogout() {

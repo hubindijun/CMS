@@ -36,6 +36,24 @@ const routes = [
         name: 'SysPermission',
         component: () => import('@/views/system/permission/index.vue'),
         meta: { title: '权限管理' }
+      },
+      {
+        path: '/system/login-log',
+        name: 'SysLoginLog',
+        component: () => import('@/views/system/login-log/index.vue'),
+        meta: { title: '登录日志' }
+      },
+      {
+        path: '/system/dict',
+        name: 'SysDict',
+        component: () => import('@/views/system/dict/index.vue'),
+        meta: { title: '字典管理' }
+      },
+      {
+        path: '/profile',
+        name: 'Profile',
+        component: () => import('@/views/profile/index.vue'),
+        meta: { title: '个人中心' }
       }
     ]
   }

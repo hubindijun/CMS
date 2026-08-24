@@ -66,3 +66,57 @@ CREATE TABLE IF NOT EXISTS sys_role_permission (
     permission_id BIGINT NOT NULL,
     UNIQUE KEY uk_role_perm (role_id, permission_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='角色权限关联表';
+
+-- 登录日志表
+CREATE TABLE IF NOT EXISTS sys_login_log (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(64) COMMENT '用户名',
+    ip VARCHAR(128) COMMENT 'IP地址',
+    location VARCHAR(255) COMMENT '地点',
+    browser VARCHAR(64) COMMENT '浏览器',
+    os VARCHAR(64) COMMENT '操作系统',
+    status TINYINT DEFAULT 1 COMMENT '状态 0失败 1成功',
+    message VARCHAR(255) COMMENT '提示消息',
+    login_time DATETIME COMMENT '登录时间',
+    create_time DATETIME,
+    update_time DATETIME,
+    create_by VARCHAR(64),
+    update_by VARCHAR(64),
+    deleted TINYINT DEFAULT 0,
+    KEY idx_username (username),
+    KEY idx_login_time (login_time)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='登录日志表';
+
+-- 字典类型表
+CREATE TABLE IF NOT EXISTS sys_dict_type (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    dict_name VARCHAR(100) COMMENT '字典名称',
+    dict_type VARCHAR(100) COMMENT '字典类型',
+    status TINYINT DEFAULT 1 COMMENT '状态 0禁用 1启用',
+    remark VARCHAR(500) COMMENT '备注',
+    create_time DATETIME,
+    update_time DATETIME,
+    create_by VARCHAR(64),
+    update_by VARCHAR(64),
+    deleted TINYINT DEFAULT 0,
+    UNIQUE KEY uk_dict_type (dict_type)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='字典类型表';
+
+-- 字典数据表
+CREATE TABLE IF NOT EXISTS sys_dict_data (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    dict_sort INT DEFAULT 0 COMMENT '字典排序',
+    dict_label VARCHAR(100) COMMENT '字典标签',
+    dict_value VARCHAR(100) COMMENT '字典键值',
+    dict_type VARCHAR(100) COMMENT '字典类型',
+    css_class VARCHAR(100) COMMENT '样式属性',
+    list_class VARCHAR(100) COMMENT '表格回显样式',
+    status TINYINT DEFAULT 1 COMMENT '状态 0禁用 1启用',
+    remark VARCHAR(500) COMMENT '备注',
+    create_time DATETIME,
+    update_time DATETIME,
+    create_by VARCHAR(64),
+    update_by VARCHAR(64),
+    deleted TINYINT DEFAULT 0,
+    KEY idx_dict_type (dict_type)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='字典数据表';
