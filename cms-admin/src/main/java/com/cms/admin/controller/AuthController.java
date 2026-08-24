@@ -44,10 +44,15 @@ public class AuthController {
                         .eq(com.cms.admin.entity.SysUserRole::getUserId, user.getId())
         ).stream().map(com.cms.admin.entity.SysUserRole::getRoleId).collect(Collectors.toList());
 
-        List<String> roleCodes = roleMapper.selectBatchIds(roleIds).stream()
-                .map(SysRole::getCode).collect(Collectors.toList());
-
-        boolean isRoot = roleCodes.contains(CommonConstant.ROOT_ROLE_CODE);
+        List<String> roleCodes;
+        boolean isRoot = false;
+        if (roleIds.isEmpty()) {
+            roleCodes = List.of();
+        } else {
+            roleCodes = roleMapper.selectBatchIds(roleIds).stream()
+                    .map(SysRole::getCode).collect(Collectors.toList());
+            isRoot = roleCodes.contains(CommonConstant.ROOT_ROLE_CODE);
+        }
         List<String> permissions;
         if (isRoot) {
             permissions = List.of("*:*:*");

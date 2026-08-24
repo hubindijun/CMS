@@ -1,5 +1,6 @@
 package com.cms.admin.security;
 
+import com.cms.admin.util.CaptchaUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,7 +28,9 @@ public class SecurityConfig {
     private final AuthenticationFailureHandler failureHandler;
     private final LogoutSuccessHandler logoutSuccessHandler;
     private final DefaultAccessDeniedHandler accessDeniedHandler;
-    private final CaptchaFilter captchaFilter;
+    private final DefaultAuthenticationEntryPoint authenticationEntryPoint;
+    private final CaptchaUtil captchaUtil;
+    private final LoginAttemptService loginAttemptService;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -64,16 +67,17 @@ public class SecurityConfig {
             )
             .exceptionHandling(ex -> ex
                 .accessDeniedHandler(accessDeniedHandler)
-                .authenticationEntryPoint((request, response, authException) -> {
-                    response.setContentType("application/json;charset=UTF-8");
-                    response.setStatus(401);
-                    response.getWriter().write("{\"code\":401,\"message\":\"未登录或登录已过期\"}");
-                })
+                .authenticationEntryPoint(authenticationEntryPoint)
             )
-            .addFilterBefore(captchaFilter, UsernamePasswordAuthenticationFilter.class)
+            .addFilterBefore(captchaFilter(), UsernamePasswordAuthenticationFilter.class)
             .userDetailsService(userDetailsService);
 
         return http.build();
+    }
+
+    @Bean
+    public CaptchaFilter captchaFilter() {
+        return new CaptchaFilter(captchaUtil, loginAttemptService);
     }
 
     @Bean

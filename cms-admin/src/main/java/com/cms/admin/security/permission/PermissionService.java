@@ -20,7 +20,7 @@ public class PermissionService {
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         return authorities.stream()
                 .map(GrantedAuthority::getAuthority)
-                .anyMatch(perm -> "*:*:*".equals(perm) || PatternMatchUtils.simpleMatch(permission, perm));
+                .anyMatch(perm -> "*:*:*".equals(perm) || PatternMatchUtils.simpleMatch(perm, permission));
     }
 
     public boolean hasAnyPermission(String... permissions) {

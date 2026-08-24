@@ -8,8 +8,8 @@ import com.cms.admin.mapper.SysRoleMapper;
 import com.cms.admin.mapper.SysUserMapper;
 import com.cms.admin.mapper.SysUserRoleMapper;
 import com.cms.common.constant.CommonConstant;
-import com.cms.common.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -40,7 +40,7 @@ public class CustomUserDetailsService implements UserDetailsService {
             throw new UsernameNotFoundException("用户不存在");
         }
         if (user.getStatus() == 0) {
-            throw new BusinessException("账号已禁用");
+            throw new DisabledException("账号已禁用");
         }
 
         List<Long> roleIds = userRoleMapper.selectList(
@@ -49,6 +49,10 @@ public class CustomUserDetailsService implements UserDetailsService {
         ).stream().map(com.cms.admin.entity.SysUserRole::getRoleId).collect(Collectors.toList());
 
         List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+
+        if (roleIds.isEmpty()) {
+            return new User(user.getUsername(), user.getPassword(), authorities);
+        }
 
         boolean isRoot = roleMapper.selectBatchIds(roleIds).stream()
                 .anyMatch(r -> CommonConstant.ROOT_ROLE_CODE.equals(r.getCode()));
