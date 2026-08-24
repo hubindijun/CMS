@@ -119,8 +119,7 @@ async function refreshCaptcha() {
   }
 }
 
-async function handleLogin(e) {
-  e.preventDefault()
+async function handleLogin() {
   try {
     await formRef.value.validate()
   } catch (_) {
