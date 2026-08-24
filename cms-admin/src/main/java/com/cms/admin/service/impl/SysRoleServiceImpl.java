@@ -88,9 +88,6 @@ public class SysRoleServiceImpl implements SysRoleService {
         if (role == null) {
             throw new BusinessException("角色不存在");
         }
-        if (CommonConstant.ROOT_ROLE_CODE.equals(role.getCode())) {
-            throw new BusinessException("root角色不可修改");
-        }
         SysRole update = new SysRole();
         BeanUtils.copyProperties(dto, update);
         roleMapper.updateById(update);
@@ -116,6 +113,7 @@ public class SysRoleServiceImpl implements SysRoleService {
     }
 
     @Override
+    @Transactional
     public void toggleStatus(Long id, Integer status) {
         SysRole role = roleMapper.selectById(id);
         if (role == null) {
