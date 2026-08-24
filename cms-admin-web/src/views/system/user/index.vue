@@ -69,7 +69,7 @@
             <template #cell="{ record }">
               <a-space size="small">
                 <a-button v-if="hasPerm('system:user:edit')" type="text" size="small" @click="handleEdit(record)">编辑</a-button>
-                <a-button v-if="hasPerm('system:user:role')" type="text" size="small" @click="handleAssignRole(record)">分配角色</a-button>
+                <a-button v-if="hasPerm('system:user:edit')" type="text" size="small" @click="handleAssignRole(record)">分配角色</a-button>
                 <a-button v-if="hasPerm('system:user:resetPwd')" type="text" size="small" @click="handleResetPwd(record)">重置密码</a-button>
                 <a-button v-if="hasPerm('system:user:delete')" type="text" status="danger" size="small" :disabled="record.username === 'root'" @click="handleDelete(record)">删除</a-button>
               </a-space>
@@ -163,7 +163,6 @@ const queryForm = reactive({
 
 const pagination = reactive({
   total: 0,
-  pageNum: 1,
   pageSize: 10,
   current: 1,
   pageSizeOptions: ['10', '20', '50', '100']
@@ -260,6 +259,11 @@ function handleEdit(record) {
 }
 
 async function handleSubmit() {
+  try {
+    await formRef.value.validate()
+  } catch (_) {
+    return
+  }
   submitLoading.value = true
   try {
     if (isEdit.value) {
@@ -290,9 +294,15 @@ function handleDelete(record) {
 }
 
 async function handleToggleStatus(record, value) {
-  await toggleUserStatus(record.id, value ? 1 : 0)
-  Message.success('操作成功')
-  fetchData()
+  const oldValue = record.status
+  record.status = value ? 1 : 0
+  try {
+    await toggleUserStatus(record.id, value ? 1 : 0)
+    Message.success('操作成功')
+  } catch (e) {
+    record.status = oldValue
+    throw e
+  }
 }
 
 function handleResetPwd(record) {
