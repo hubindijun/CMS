@@ -40,7 +40,7 @@
           </a-table-column>
           <a-table-column title="路由地址" data-index="path" />
           <a-table-column title="组件路径" data-index="component" />
-          <a-table-column title="权限标识" data-index="permCode" />
+          <a-table-column title="权限标识" data-index="perms" />
           <a-table-column title="排序" data-index="sort" width="80" />
           <a-table-column title="状态" data-index="status" width="100">
             <template #cell="{ record }">
@@ -105,8 +105,11 @@
         <a-form-item v-if="permForm.type === 2" label="组件路径" field="component">
           <a-input v-model="permForm.component" placeholder="请输入组件路径" />
         </a-form-item>
-        <a-form-item v-if="permForm.type === 3" label="权限标识" field="permCode">
-          <a-input v-model="permForm.permCode" placeholder="如：system:user:add" />
+        <a-form-item v-if="permForm.type !== 3" label="图标" field="icon">
+          <a-input v-model="permForm.icon" placeholder="如：icon-settings" />
+        </a-form-item>
+        <a-form-item v-if="permForm.type === 3" label="权限标识" field="perms">
+          <a-input v-model="permForm.perms" placeholder="如：system:user:add" />
         </a-form-item>
         <a-form-item label="排序" field="sort">
           <a-input-number v-model="permForm.sort" :min="0" style="width: 100%" />
@@ -152,7 +155,8 @@ const permForm = reactive({
   name: '',
   path: '',
   component: '',
-  permCode: '',
+  icon: '',
+  perms: '',
   sort: 0,
   status: 1
 })
@@ -205,7 +209,8 @@ function resetForm() {
     name: '',
     path: '',
     component: '',
-    permCode: '',
+    icon: '',
+    perms: '',
     sort: 0,
     status: 1
   })
@@ -244,7 +249,8 @@ function handleEdit(record) {
     name: record.name,
     path: record.path || '',
     component: record.component || '',
-    permCode: record.permCode || '',
+    icon: record.icon || '',
+    perms: record.perms || '',
     sort: record.sort || 0,
     status: record.status
   })

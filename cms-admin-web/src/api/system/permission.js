@@ -1,19 +1,7 @@
 import request from '@/utils/request'
 
-export function getPermissionPage(params) {
-  return request.get('/api/system/permission/page', { params })
-}
-
-export function getPermissionList() {
-  return request.get('/api/system/permission/list')
-}
-
 export function getPermissionTree() {
   return request.get('/api/system/permission/tree')
-}
-
-export function getPermission(id) {
-  return request.get(`/api/system/permission/${id}`)
 }
 
 export function addPermission(data) {
