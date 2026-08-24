@@ -1,0 +1,19 @@
+target/
+
+# IDEA
+.idea/
+*.iml
+*.iws
+
+# VS Code
+.vscode/
+
+# Logs
+*.log
+
+# macOS
+.DS_Store
+
+# Frontend
+node_modules/
+dist/
