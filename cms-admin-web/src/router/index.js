@@ -18,6 +18,12 @@ const routes = [
         name: 'Dashboard',
         component: () => import('@/views/dashboard/index.vue'),
         meta: { title: '首页' }
+      },
+      {
+        path: '/system/user',
+        name: 'SysUser',
+        component: () => import('@/views/system/user/index.vue'),
+        meta: { title: '用户管理' }
       }
     ]
   }
