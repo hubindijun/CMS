@@ -24,6 +24,18 @@ const routes = [
         name: 'SysUser',
         component: () => import('@/views/system/user/index.vue'),
         meta: { title: '用户管理' }
+      },
+      {
+        path: '/system/role',
+        name: 'SysRole',
+        component: () => import('@/views/system/role/index.vue'),
+        meta: { title: '角色管理' }
+      },
+      {
+        path: '/system/permission',
+        name: 'SysPermission',
+        component: () => import('@/views/system/permission/index.vue'),
+        meta: { title: '权限管理' }
       }
     ]
   }
