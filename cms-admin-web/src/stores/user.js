@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { login, logout, getUserInfo, getMenuTree } from '@/api/auth'
+import { resetRouter } from '@/router'
 
 export const useUserStore = defineStore('user', {
   state: () => ({
@@ -29,6 +30,7 @@ export const useUserStore = defineStore('user', {
       this.userInfo = null
       this.menuTree = []
       this.permissions = []
+      resetRouter()
     }
   }
 })

@@ -19,3 +19,9 @@ node_modules/
 dist/
 dist-ssr/
 *.local
+
+# Local config
+application-local.yml
+application-local.yaml
+.env.local
+.env.*.local

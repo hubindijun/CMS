@@ -1,7 +1,35 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 
-const routes = [
+const modules = import.meta.glob('@/views/**/*.vue')
+
+function loadView(component) {
+  const path = `/src/views/${component}.vue`
+  return modules[path] || (() => import('@/views/dashboard/index.vue'))
+}
+
+function generateRoutes(menuTree) {
+  const routes = []
+  function traverse(tree) {
+    for (const item of tree) {
+      if (item.type === 2 && item.component) {
+        routes.push({
+          path: item.path,
+          name: item.name,
+          component: loadView(item.component),
+          meta: { title: item.name }
+        })
+      }
+      if (item.children && item.children.length > 0) {
+        traverse(item.children)
+      }
+    }
+  }
+  traverse(menuTree)
+  return routes
+}
+
+const constantRoutes = [
   {
     path: '/login',
     name: 'Login',
@@ -10,6 +38,7 @@ const routes = [
   },
   {
     path: '/',
+    name: 'Layout',
     component: () => import('@/layout/index.vue'),
     redirect: '/dashboard',
     children: [
@@ -18,36 +47,6 @@ const routes = [
         name: 'Dashboard',
         component: () => import('@/views/dashboard/index.vue'),
         meta: { title: '首页' }
-      },
-      {
-        path: '/system/user',
-        name: 'SysUser',
-        component: () => import('@/views/system/user/index.vue'),
-        meta: { title: '用户管理' }
-      },
-      {
-        path: '/system/role',
-        name: 'SysRole',
-        component: () => import('@/views/system/role/index.vue'),
-        meta: { title: '角色管理' }
-      },
-      {
-        path: '/system/permission',
-        name: 'SysPermission',
-        component: () => import('@/views/system/permission/index.vue'),
-        meta: { title: '权限管理' }
-      },
-      {
-        path: '/system/login-log',
-        name: 'SysLoginLog',
-        component: () => import('@/views/system/login-log/index.vue'),
-        meta: { title: '登录日志' }
-      },
-      {
-        path: '/system/dict',
-        name: 'SysDict',
-        component: () => import('@/views/system/dict/index.vue'),
-        meta: { title: '字典管理' }
       },
       {
         path: '/profile',
@@ -61,8 +60,19 @@ const routes = [
 
 const router = createRouter({
   history: createWebHistory(),
-  routes
+  routes: constantRoutes
 })
+
+let dynamicRoutesAdded = false
+
+function addDynamicRoutes(menuTree) {
+  if (dynamicRoutesAdded) return
+  const dynamicRoutes = generateRoutes(menuTree)
+  for (const route of dynamicRoutes) {
+    router.addRoute('Layout', route)
+  }
+  dynamicRoutesAdded = true
+}
 
 router.beforeEach(async (to, from, next) => {
   if (to.meta?.public) {
@@ -75,12 +85,26 @@ router.beforeEach(async (to, from, next) => {
     try {
       await userStore.fetchUserInfo()
       await userStore.fetchMenuTree()
+      addDynamicRoutes(userStore.menuTree)
+      next({ ...to, replace: true })
+      return
     } catch (e) {
       next(`/login?redirect=${to.fullPath}`)
       return
     }
   }
+
+  if (!dynamicRoutesAdded && userStore.menuTree?.length) {
+    addDynamicRoutes(userStore.menuTree)
+    next({ ...to, replace: true })
+    return
+  }
+
   next()
 })
+
+export function resetRouter() {
+  dynamicRoutesAdded = false
+}
 
 export default router
