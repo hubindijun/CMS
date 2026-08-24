@@ -125,7 +125,9 @@ public class SysUserServiceImpl implements SysUserService {
     @Transactional
     public void delete(Long id) {
         SysUser user = userMapper.selectById(id);
-        if (user == null) return;
+        if (user == null) {
+            throw new BusinessException("用户不存在");
+        }
         if (CommonConstant.ROOT_ROLE_CODE.equals(user.getUsername())) {
             throw new BusinessException("root用户不可删除");
         }
@@ -152,6 +154,9 @@ public class SysUserServiceImpl implements SysUserService {
         if (user == null) {
             throw new BusinessException("用户不存在");
         }
+        if (CommonConstant.ROOT_ROLE_CODE.equals(user.getUsername())) {
+            throw new BusinessException("root用户密码不可重置");
+        }
         user.setPassword(passwordEncoder.encode(newPassword));
         userMapper.updateById(user);
     }
@@ -159,7 +164,9 @@ public class SysUserServiceImpl implements SysUserService {
     @Override
     public UserVO getById(Long id) {
         SysUser user = userMapper.selectById(id);
-        if (user == null) return null;
+        if (user == null) {
+            throw new BusinessException("用户不存在");
+        }
         UserVO vo = new UserVO();
         BeanUtils.copyProperties(user, vo);
         List<Long> roleIds = getRoleIds(id);
