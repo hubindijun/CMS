@@ -15,14 +15,21 @@ request.interceptors.request.use(
   (error) => Promise.reject(error)
 )
 
+async function handle401() {
+  const { useUserStore } = await import('@/stores/user')
+  const userStore = useUserStore()
+  userStore.logout()
+  Message.error('登录已过期，请重新登录')
+  router.push('/login')
+}
+
 request.interceptors.response.use(
   (response) => {
     const res = response.data
     if (res.code === 200) {
       return res.data
     } else if (res.code === 401) {
-      Message.error('登录已过期，请重新登录')
-      router.push('/login')
+      handle401()
       return Promise.reject(res)
     } else {
       Message.error(res.message || '请求失败')
@@ -31,8 +38,7 @@ request.interceptors.response.use(
   },
   (error) => {
     if (error.response?.status === 401) {
-      Message.error('登录已过期，请重新登录')
-      router.push('/login')
+      handle401()
     } else if (error.response?.status === 403) {
       Message.error('权限不足')
     } else {

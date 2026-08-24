@@ -28,8 +28,6 @@ const router = createRouter({
   routes
 })
 
-let menuLoaded = false
-
 router.beforeEach(async (to, from, next) => {
   if (to.meta?.public) {
     next()
@@ -41,7 +39,6 @@ router.beforeEach(async (to, from, next) => {
     try {
       await userStore.fetchUserInfo()
       await userStore.fetchMenuTree()
-      menuLoaded = true
     } catch (e) {
       next(`/login?redirect=${to.fullPath}`)
       return

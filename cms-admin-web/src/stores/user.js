@@ -10,6 +10,8 @@ export const useUserStore = defineStore('user', {
   actions: {
     async login(formData) {
       await login(formData)
+      await this.fetchUserInfo()
+      await this.fetchMenuTree()
     },
     async fetchUserInfo() {
       const info = await getUserInfo()
