@@ -6,6 +6,7 @@ import com.cms.admin.mapper.SysUserMapper;
 import com.cms.admin.service.SysPermissionService;
 import com.cms.admin.vo.system.PermissionVO;
 import com.cms.common.base.Result;
+import com.cms.common.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -30,6 +31,9 @@ public class SysMenuController {
                 new LambdaQueryWrapper<SysUser>()
                         .eq(SysUser::getUsername, username)
         );
+        if (user == null) {
+            throw new BusinessException("用户不存在");
+        }
         return Result.ok(permissionService.menuTreeByUserId(user.getId()));
     }
 }

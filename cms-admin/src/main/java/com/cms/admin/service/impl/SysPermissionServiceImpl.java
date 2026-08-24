@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -34,11 +35,47 @@ public class SysPermissionServiceImpl implements SysPermissionService {
 
     @Override
     public List<PermissionVO> menuTreeByUserId(Long userId) {
-        List<SysPermission> all = permissionMapper.selectByUserId(userId);
-        List<SysPermission> menus = all.stream()
+        // 1. 查询全部权限（用于补全父级节点，数量有限，内存中处理性能没问题）
+        List<SysPermission> allPerms = permissionMapper.selectList(
+                new LambdaQueryWrapper<SysPermission>().orderByAsc(SysPermission::getSort)
+        );
+        Map<Long, SysPermission> allPermMap = allPerms.stream()
+                .collect(Collectors.toMap(SysPermission::getId, p -> p));
+
+        // 2. 获取用户拥有的权限，过滤出目录和菜单（type <= 2）
+        List<SysPermission> userPerms = permissionMapper.selectByUserId(userId);
+        List<SysPermission> menus = userPerms.stream()
                 .filter(p -> p.getType() != null && p.getType() <= 2)
                 .collect(Collectors.toList());
-        return buildTree(menus, 0L);
+
+        // 3. 递归补全所有缺失的父级节点
+        List<SysPermission> result = fillParents(menus, allPermMap);
+        return buildTree(result, 0L);
+    }
+
+    private List<SysPermission> fillParents(List<SysPermission> menus, Map<Long, SysPermission> allPermMap) {
+        List<SysPermission> result = new ArrayList<>(menus);
+        Set<Long> seen = result.stream()
+                .map(SysPermission::getId)
+                .collect(Collectors.toSet());
+        boolean changed = true;
+        while (changed) {
+            changed = false;
+            List<SysPermission> toAdd = new ArrayList<>();
+            for (SysPermission p : result) {
+                Long parentId = p.getParentId();
+                if (parentId != null && parentId != 0L && !seen.contains(parentId)) {
+                    SysPermission parent = allPermMap.get(parentId);
+                    if (parent != null) {
+                        toAdd.add(parent);
+                        seen.add(parentId);
+                        changed = true;
+                    }
+                }
+            }
+            result.addAll(toAdd);
+        }
+        return result;
     }
 
     @Override
