@@ -1,7 +1,7 @@
 <template>
   <a-layout class="app-layout">
     <Sidebar :collapsed="collapsed" />
-    <a-layout :style="{ marginLeft: collapsed ? '60px' : '220px' }">
+    <a-layout>
       <Header :collapsed="collapsed" @toggle-collapse="toggleCollapse" />
       <a-layout-content class="layout-content">
         <router-view v-slot="{ Component }">
@@ -37,17 +37,17 @@ function toggleCollapse() {
   min-height: calc(100vh - 60px);
 }
 
-.fade-transform-enter-active,
-.fade-transform-leave-active {
+:global(.fade-transform-enter-active),
+:global(.fade-transform-leave-active) {
   transition: all 0.3s ease;
 }
 
-.fade-transform-enter-from {
+:global(.fade-transform-enter-from) {
   opacity: 0;
   transform: translateY(10px);
 }
 
-.fade-transform-leave-to {
+:global(.fade-transform-leave-to) {
   opacity: 0;
   transform: translateY(-10px);
 }

@@ -119,19 +119,27 @@ async function refreshCaptcha() {
   }
 }
 
-async function handleLogin({ values, errors }) {
-  if (errors) return
+async function handleLogin(e) {
+  e.preventDefault()
+  try {
+    await formRef.value.validate()
+  } catch (_) {
+    return
+  }
   loading.value = true
   try {
     await userStore.login({
-      username: values.username,
-      password: values.password,
-      captcha: values.captcha,
+      username: formData.username,
+      password: formData.password,
+      captcha: formData.captcha,
       captchaKey: captchaKey.value
     })
     Message.success('登录成功')
-    const redirect = route.query.redirect || '/dashboard'
-    router.push(redirect)
+    const redirect = route.query.redirect
+    const safeRedirect = typeof redirect === 'string' && redirect.startsWith('/') && !redirect.startsWith('//')
+      ? redirect
+      : '/dashboard'
+    router.push(safeRedirect)
   } catch (e) {
     // error handled by interceptor, refresh captcha
     refreshCaptcha()

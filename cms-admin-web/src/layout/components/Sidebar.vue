@@ -164,10 +164,7 @@ onMounted(() => {
   background: #001529;
   overflow: hidden;
   height: 100vh;
-  position: fixed;
-  left: 0;
-  top: 0;
-  z-index: 10;
+  flex-shrink: 0;
 }
 
 .sider-logo {
