@@ -5,6 +5,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
+/**
+ * 用户视图对象
+ */
 public class UserVO {
     private Long id;
     private String username;

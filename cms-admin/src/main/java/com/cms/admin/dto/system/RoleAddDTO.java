@@ -5,6 +5,9 @@ import lombok.Data;
 import java.util.List;
 
 @Data
+/**
+ * 角色新增请求参数
+ */
 public class RoleAddDTO {
     @NotBlank(message = "角色名称不能为空")
     private String name;

@@ -26,6 +26,9 @@ import org.springframework.util.StringUtils;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * 系统用户服务实现
+ */
 @Service
 @RequiredArgsConstructor
 public class SysUserServiceImpl implements SysUserService {

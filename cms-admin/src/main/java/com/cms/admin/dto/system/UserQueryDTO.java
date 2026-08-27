@@ -6,6 +6,9 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
+/**
+ * 用户查询参数
+ */
 public class UserQueryDTO extends PageQuery {
     private String username;
     private String phone;

@@ -17,6 +17,9 @@ import org.springframework.util.StringUtils;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * 字典数据服务实现
+ */
 @Service
 @RequiredArgsConstructor
 public class SysDictDataServiceImpl implements SysDictDataService {

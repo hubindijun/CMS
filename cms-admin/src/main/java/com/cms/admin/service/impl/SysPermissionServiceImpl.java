@@ -19,6 +19,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * 系统权限（菜单）服务实现
+ */
 @Service
 @RequiredArgsConstructor
 public class SysPermissionServiceImpl implements SysPermissionService {
@@ -53,6 +56,13 @@ public class SysPermissionServiceImpl implements SysPermissionService {
         return buildTree(result, 0L);
     }
 
+    /**
+     * 补全菜单节点缺失的父级节点（确保菜单树完整，从叶子一直补到根）
+     *
+     * @param menus 用户拥有的菜单节点
+     * @param allPermMap 全部权限映射（id -> 权限对象）
+     * @return 包含所有祖先节点的菜单列表
+     */
     private List<SysPermission> fillParents(List<SysPermission> menus, Map<Long, SysPermission> allPermMap) {
         List<SysPermission> result = new ArrayList<>(menus);
         Set<Long> seen = result.stream()

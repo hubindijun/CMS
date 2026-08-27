@@ -4,6 +4,9 @@ import lombok.Data;
 import java.util.List;
 
 @Data
+/**
+ * 权限视图对象
+ */
 public class PermissionVO {
     private Long id;
     private Long parentId;

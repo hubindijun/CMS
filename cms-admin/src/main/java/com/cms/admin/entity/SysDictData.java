@@ -8,6 +8,9 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @TableName("sys_dict_data")
+/**
+ * 字典数据实体
+ */
 public class SysDictData extends BaseEntity {
     private Integer dictSort;
     private String dictLabel;

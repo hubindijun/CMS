@@ -9,6 +9,9 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 import java.io.IOException;
 
+/**
+ * 未登录/登录过期入口点：返回 401 JSON 响应
+ */
 @Component
 public class DefaultAuthenticationEntryPoint implements AuthenticationEntryPoint {
     private final ObjectMapper objectMapper = new ObjectMapper();

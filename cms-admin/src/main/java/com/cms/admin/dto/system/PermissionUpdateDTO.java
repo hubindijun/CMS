@@ -4,6 +4,9 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
+/**
+ * 权限修改请求参数
+ */
 public class PermissionUpdateDTO {
     @NotNull(message = "ID不能为空")
     private Long id;

@@ -13,6 +13,12 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * 字典数据管理接口
+ * <p>
+ * 提供字典数据的分页查询、详情查询、按类型查询、新增、修改与删除功能。
+ * </p>
+ */
 @RestController
 @RequestMapping("/api/system/dict/data")
 @RequiredArgsConstructor
@@ -20,24 +26,48 @@ public class SysDictDataController {
 
     private final SysDictDataService dictDataService;
 
+    /**
+     * 分页查询字典数据
+     *
+     * @param dto 查询条件
+     * @return 分页结果
+     */
     @GetMapping("/page")
     @PreAuthorize("@pms.hasPermission('system:dict:query')")
     public Result<PageResult<DictDataVO>> page(DictDataQueryDTO dto) {
         return Result.ok(dictDataService.page(dto));
     }
 
+    /**
+     * 根据 ID 获取字典数据详情
+     *
+     * @param id 字典数据 ID
+     * @return 字典数据信息
+     */
     @GetMapping("/{id}")
     @PreAuthorize("@pms.hasPermission('system:dict:query')")
     public Result<DictDataVO> getById(@PathVariable Long id) {
         return Result.ok(dictDataService.getById(id));
     }
 
+    /**
+     * 根据字典类型查询字典数据列表
+     *
+     * @param dictType 字典类型编码
+     * @return 字典数据列表
+     */
     @GetMapping("/byType")
     @PreAuthorize("@pms.hasPermission('system:dict:query')")
     public Result<List<DictDataVO>> listByType(@RequestParam String dictType) {
         return Result.ok(dictDataService.listByType(dictType));
     }
 
+    /**
+     * 新增字典数据
+     *
+     * @param dictData 字典数据信息
+     * @return 无
+     */
     @PostMapping
     @PreAuthorize("@pms.hasPermission('system:dict:add')")
     public Result<Void> add(@RequestBody @Valid SysDictData dictData) {
@@ -45,6 +75,12 @@ public class SysDictDataController {
         return Result.ok();
     }
 
+    /**
+     * 修改字典数据
+     *
+     * @param dictData 字典数据信息
+     * @return 无
+     */
     @PutMapping
     @PreAuthorize("@pms.hasPermission('system:dict:edit')")
     public Result<Void> update(@RequestBody @Valid SysDictData dictData) {
@@ -52,6 +88,12 @@ public class SysDictDataController {
         return Result.ok();
     }
 
+    /**
+     * 删除字典数据
+     *
+     * @param id 字典数据 ID
+     * @return 无
+     */
     @DeleteMapping("/{id}")
     @PreAuthorize("@pms.hasPermission('system:dict:delete')")
     public Result<Void> delete(@PathVariable Long id) {

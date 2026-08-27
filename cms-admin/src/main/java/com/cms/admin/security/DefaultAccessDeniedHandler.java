@@ -9,6 +9,9 @@ import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.stereotype.Component;
 import java.io.IOException;
 
+/**
+ * 权限不足处理器：返回 403 JSON 响应
+ */
 @Component
 public class DefaultAccessDeniedHandler implements AccessDeniedHandler {
     private final ObjectMapper objectMapper = new ObjectMapper();

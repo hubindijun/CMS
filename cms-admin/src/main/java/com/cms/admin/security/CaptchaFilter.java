@@ -1,6 +1,6 @@
 package com.cms.admin.security;
 
-import com.cms.admin.util.CaptchaUtil;
+import com.cms.admin.util.CaptchaService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -10,13 +10,16 @@ import org.springframework.security.authentication.LockedException;
 import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 
+/**
+ * 验证码校验过滤器，在用户名密码认证前校验验证码及登录失败锁定状态
+ */
 public class CaptchaFilter extends OncePerRequestFilter {
 
-    private final CaptchaUtil captchaUtil;
+    private final CaptchaService captchaService;
     private final LoginAttemptService loginAttemptService;
 
-    public CaptchaFilter(CaptchaUtil captchaUtil, LoginAttemptService loginAttemptService) {
-        this.captchaUtil = captchaUtil;
+    public CaptchaFilter(CaptchaService captchaService, LoginAttemptService loginAttemptService) {
+        this.captchaService = captchaService;
         this.loginAttemptService = loginAttemptService;
     }
 
@@ -31,7 +34,7 @@ public class CaptchaFilter extends OncePerRequestFilter {
 
             String captcha = request.getParameter("captcha");
             String captchaKey = request.getParameter("captchaKey");
-            if (!captchaUtil.verify(captchaKey, captcha)) {
+            if (!captchaService.verify(captchaKey, captcha)) {
                 loginAttemptService.incrementFail(username);
                 throw new BadCredentialsException("验证码错误");
             }

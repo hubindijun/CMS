@@ -13,9 +13,12 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
 import org.springframework.stereotype.Component;
 import java.io.IOException;
 
+/**
+ * 登录失败处理器：根据异常类型返回对应中文错误信息，并对密码错误计数
+ */
 @Component
 @RequiredArgsConstructor
-public class AuthenticationFailureHandler implements AuthenticationFailureHandler {
+public class CustomAuthenticationFailureHandler implements AuthenticationFailureHandler {
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final LoginAttemptService loginAttemptService;
 

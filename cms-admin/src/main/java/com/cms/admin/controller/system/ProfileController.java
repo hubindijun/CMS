@@ -16,6 +16,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * 个人中心接口
+ * <p>
+ * 提供当前登录用户的资料查询、资料修改与密码修改功能。
+ * </p>
+ */
 @RestController
 @RequestMapping("/api/system/profile")
 @RequiredArgsConstructor
@@ -24,6 +30,11 @@ public class ProfileController {
     private final SysUserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
 
+    /**
+     * 获取当前登录用户的个人资料
+     *
+     * @return 用户信息
+     */
     @GetMapping
     public Result<UserVO> getProfile() {
         String username = getCurrentUsername();
@@ -38,6 +49,12 @@ public class ProfileController {
         return Result.ok(vo);
     }
 
+    /**
+     * 修改当前登录用户的个人资料
+     *
+     * @param dto 资料信息
+     * @return 无
+     */
     @PutMapping
     public Result<Void> updateProfile(@RequestBody ProfileUpdateDTO dto) {
         String username = getCurrentUsername();
@@ -69,6 +86,12 @@ public class ProfileController {
         return Result.ok();
     }
 
+    /**
+     * 修改当前登录用户的密码
+     *
+     * @param dto 新旧密码
+     * @return 无
+     */
     @PutMapping("/password")
     public Result<Void> changePassword(@RequestBody @Valid ChangePasswordDTO dto) {
         String username = getCurrentUsername();

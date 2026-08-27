@@ -5,6 +5,9 @@ import lombok.Data;
 import java.util.List;
 
 @Data
+/**
+ * 用户新增请求参数
+ */
 public class UserAddDTO {
     @NotBlank(message = "用户名不能为空")
     private String username;

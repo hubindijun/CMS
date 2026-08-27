@@ -17,6 +17,9 @@ import org.springframework.util.StringUtils;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * 字典类型服务实现
+ */
 @Service
 @RequiredArgsConstructor
 public class SysDictTypeServiceImpl implements SysDictTypeService {

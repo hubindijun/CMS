@@ -8,6 +8,9 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @TableName("sys_permission")
+/**
+ * 系统权限（菜单）实体
+ */
 public class SysPermission extends BaseEntity {
     private Long parentId;
     private String name;

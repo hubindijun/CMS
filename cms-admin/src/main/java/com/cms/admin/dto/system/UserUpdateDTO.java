@@ -5,6 +5,9 @@ import lombok.Data;
 import java.util.List;
 
 @Data
+/**
+ * 用户修改请求参数
+ */
 public class UserUpdateDTO {
     @NotNull(message = "ID不能为空")
     private Long id;

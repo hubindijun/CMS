@@ -15,6 +15,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
+/**
+ * 菜单接口
+ * <p>
+ * 提供当前登录用户的菜单树查询接口，用于前端动态路由渲染。
+ * </p>
+ */
 @RestController
 @RequestMapping("/api/menu")
 @RequiredArgsConstructor
@@ -23,6 +29,11 @@ public class SysMenuController {
     private final SysPermissionService permissionService;
     private final SysUserMapper userMapper;
 
+    /**
+     * 获取当前登录用户的菜单树
+     *
+     * @return 菜单树结构列表
+     */
     @GetMapping("/tree")
     public Result<List<PermissionVO>> menuTree() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

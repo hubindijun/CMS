@@ -9,6 +9,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * 登录日志管理接口
+ * <p>
+ * 提供登录日志的分页查询、单条删除与清空功能。
+ * </p>
+ */
 @RestController
 @RequestMapping("/api/system/login-log")
 @RequiredArgsConstructor
@@ -16,12 +22,24 @@ public class SysLoginLogController {
 
     private final SysLoginLogService loginLogService;
 
+    /**
+     * 分页查询登录日志
+     *
+     * @param dto 查询条件
+     * @return 分页结果
+     */
     @GetMapping("/page")
     @PreAuthorize("@pms.hasPermission('system:loginLog:query')")
     public Result<PageResult<LoginLogVO>> page(LoginLogQueryDTO dto) {
         return Result.ok(loginLogService.page(dto));
     }
 
+    /**
+     * 删除单条登录日志
+     *
+     * @param id 日志 ID
+     * @return 无
+     */
     @DeleteMapping("/{id}")
     @PreAuthorize("@pms.hasPermission('system:loginLog:delete')")
     public Result<Void> delete(@PathVariable Long id) {
@@ -29,6 +47,11 @@ public class SysLoginLogController {
         return Result.ok();
     }
 
+    /**
+     * 清空全部登录日志
+     *
+     * @return 无
+     */
     @DeleteMapping("/clear")
     @PreAuthorize("@pms.hasPermission('system:loginLog:remove')")
     public Result<Void> clear() {

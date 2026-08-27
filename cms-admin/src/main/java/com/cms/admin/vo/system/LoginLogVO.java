@@ -4,6 +4,9 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Data
+/**
+ * 登录日志视图对象
+ */
 public class LoginLogVO {
     private Long id;
     private String username;

@@ -5,6 +5,9 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
+/**
+ * 权限新增请求参数
+ */
 public class PermissionAddDTO {
     private Long parentId;
     @NotBlank(message = "权限名称不能为空")

@@ -8,6 +8,9 @@ import java.io.Serializable;
 
 @Data
 @TableName("sys_user_role")
+/**
+ * 用户角色关联实体
+ */
 public class SysUserRole implements Serializable {
     @TableId(type = IdType.AUTO)
     private Long id;

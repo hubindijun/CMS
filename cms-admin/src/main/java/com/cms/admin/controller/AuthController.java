@@ -20,6 +20,12 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * 认证相关接口
+ * <p>
+ * 提供当前登录用户信息查询接口，包含用户基本信息、角色列表与权限标识。
+ * </p>
+ */
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
@@ -30,6 +36,11 @@ public class AuthController {
     private final SysPermissionMapper permissionMapper;
     private final SysUserRoleMapper userRoleMapper;
 
+    /**
+     * 获取当前登录用户信息
+     *
+     * @return 用户信息（基本信息 + 角色 + 权限）
+     */
     @GetMapping("/user-info")
     public Result<UserInfoVO> userInfo() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

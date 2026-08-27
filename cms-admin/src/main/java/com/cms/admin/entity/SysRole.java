@@ -8,6 +8,9 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @TableName("sys_role")
+/**
+ * 系统角色实体
+ */
 public class SysRole extends BaseEntity {
     private String name;
     private String code;

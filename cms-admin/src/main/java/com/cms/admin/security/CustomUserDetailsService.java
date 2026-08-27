@@ -21,6 +21,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * 自定义用户详情服务，根据用户名加载用户信息和权限列表
+ */
 @Service
 @RequiredArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {
@@ -30,6 +33,14 @@ public class CustomUserDetailsService implements UserDetailsService {
     private final SysPermissionMapper permissionMapper;
     private final SysUserRoleMapper userRoleMapper;
 
+    /**
+     * 根据用户名加载用户详情（包含权限标识集合）。
+     * 超级管理员（root角色）直接授予 *:*:* 通配符权限。
+     *
+     * @param username 用户名
+     * @return 用户详情
+     * @throws UsernameNotFoundException 用户不存在
+     */
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         SysUser user = userMapper.selectOne(

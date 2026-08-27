@@ -4,6 +4,9 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Data
+/**
+ * 字典数据视图对象
+ */
 public class DictDataVO {
     private Long id;
     private Integer dictSort;

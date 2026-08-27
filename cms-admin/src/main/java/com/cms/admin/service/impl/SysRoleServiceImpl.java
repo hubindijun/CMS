@@ -23,6 +23,9 @@ import org.springframework.util.StringUtils;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * 系统角色服务实现
+ */
 @Service
 @RequiredArgsConstructor
 public class SysRoleServiceImpl implements SysRoleService {

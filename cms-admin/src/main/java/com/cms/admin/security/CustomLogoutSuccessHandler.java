@@ -9,8 +9,11 @@ import org.springframework.security.web.authentication.logout.LogoutSuccessHandl
 import org.springframework.stereotype.Component;
 import java.io.IOException;
 
+/**
+ * 登出成功处理器：返回 JSON 成功响应
+ */
 @Component
-public class LogoutSuccessHandler implements LogoutSuccessHandler {
+public class CustomLogoutSuccessHandler implements LogoutSuccessHandler {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override

@@ -10,9 +10,12 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.stereotype.Component;
 import java.io.IOException;
 
+/**
+ * 登录成功处理器：清除失败计数，返回 JSON 成功响应
+ */
 @Component
 @RequiredArgsConstructor
-public class AuthenticationSuccessHandler implements AuthenticationSuccessHandler {
+public class CustomAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final LoginAttemptService loginAttemptService;
 
