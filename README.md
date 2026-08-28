@@ -7,10 +7,10 @@
 ### 后端
 - **Java 17+** + **Spring Boot 3.3.x**
 - **Spring Security** — 认证授权
-- **Spring Session + Redis** — 分布式会话
+- **Token + Redis** — 无状态分布式认证（Bearer Token，2小时滑动过期）
 - **MyBatis-Plus 3.5.x** — ORM + 代码生成
 - **MySQL 8.0** — 主数据库
-- **Redis 6.x** — 会话存储 + 验证码缓存
+- **Redis 6.x** — Token 存储 + 权限缓存 + 验证码
 - **Knife4j / Swagger UI** — API 文档
 - **Hutool** — 工具类库
 
@@ -99,7 +99,7 @@ npm run dev
 访问 http://localhost:5173
 
 ### 默认账号
-- 用户名：`root`
+- 用户名：`admin`
 - 密码：`admin123`
 - 角色：超级管理员（拥有所有权限）
 
@@ -108,13 +108,13 @@ npm run dev
 ### ✅ 第一阶段：RBAC 权限体系（已完成）
 - [x] 用户管理 — 增删改查、状态切换、重置密码、分配角色
 - [x] 角色管理 — 增删改查、状态切换、分配权限（树形复选）
-- [x] 权限管理 — 树形结构、目录/菜单/按钮三级
-- [x] 登录认证 — 用户名密码 + 图片验证码 + 失败锁定
+- [x] 权限管理 — 树形结构、目录/菜单/资源路径配置
+- [x] 登录认证 — Token + Redis、图片验证码、失败锁定
 - [x] 个人中心 — 基本信息修改、修改密码
 - [x] 登录日志 — 查询、删除、清空
 - [x] 字典管理 — 字典类型 + 字典数据
-- [x] 动态菜单 — 按权限渲染左侧菜单
-- [x] 按钮级权限 — 前端按钮显示控制 + 后端接口拦截
+- [x] 动态菜单 — 按角色权限渲染左侧菜单和路由
+- [x] 角色级权限 — @PreAuthorize("hasRole('xxx')") 接口拦截
 
 ### 📋 第二阶段：商品管理（待开发）
 - [ ] 商品分类
@@ -197,7 +197,7 @@ npm run dev
 
 ## 权限模型
 
-用户 → 角色 → 权限（RBAC 三级）
+用户 → 角色 → 权限（RBAC 三级），多角色取并集。
 
 ```
 用户 (sys_user)
@@ -206,16 +206,19 @@ npm run dev
 ```
 
 **权限类型：**
-- **目录**（一级菜单）：左侧菜单分类
-- **菜单**（二级页面）：可进入的页面
-- **按钮**（操作权限）：页面内的操作按钮
+- **目录**（type=1）：左侧菜单分类
+- **菜单**（type=2）：可进入的页面，对应前端路由
+- **资源**（type=3）：接口资源路径，Ant 风格通配，如 `/api/system/user/**`
 
-**权限标识规范：** `模块:功能:操作`，如 `system:user:add`、`order:refund:approve`
+**前端菜单：** 根据用户角色关联的权限（目录+菜单）动态渲染侧边栏和路由，无权限的菜单不显示、路由不注册。
+
+**后端鉴权：** 采用角色驱动的注解方式，`@PreAuthorize("hasRole('xxx')")`，系统管理模块默认 `hasRole('admin')`，其他模块默认登录即可访问。
+
+**认证方式：** Bearer Token + Redis，无状态，支持分布式集群，Token 有效期 2 小时（滑动续期）。
 
 **超级管理员：**
-- root 用户 + root 角色
-- 拥有所有权限（*:*:*），包括后续新增的权限
-- root 角色不可删除、不可修改编码、不可禁用
+- admin 用户 + admin 角色
+- admin 角色不可删除、不可修改编码、不可禁用
 
 ## 项目文档
 - [设计文档](docs/superpowers/specs/2026-08-24-cms-scaffolding-design.md)
@@ -230,7 +233,8 @@ npm run dev
 - 实体分层：entity（数据库实体）、dto（入参传输）、vo（出参视图）
 - 逻辑删除：deleted 字段，MyBatis-Plus 自动处理
 - 基础实体：`BaseEntity` 包含 id、createTime、updateTime、createBy、updateBy、deleted
-- 后端鉴权：`@PreAuthorize("@pms.hasPermission('模块:功能:操作')")`
+- 后端鉴权：`@PreAuthorize("hasRole('角色编码')")`，角色驱动
+- 认证方式：Bearer Token + Redis，无状态分布式认证
 
 ### 前端
 - 页面组件放在 `views/`，按业务模块分目录

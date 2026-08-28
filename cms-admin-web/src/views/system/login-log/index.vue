@@ -29,7 +29,7 @@
       <!-- 操作栏 -->
       <div class="flex justify-between items-center mb-4 mt-4">
         <a-space>
-          <a-button v-if="hasPerm('system:loginLog:remove')" status="danger" @click="handleClear">
+          <a-button status="danger" @click="handleClear">
             <template #icon><icon-delete /></template>
             清空日志
           </a-button>
@@ -63,7 +63,7 @@
           <a-table-column title="操作" width="100" fixed="right">
             <template #cell="{ record }">
               <a-space size="small">
-                <a-button v-if="hasPerm('system:loginLog:delete')" type="text" status="danger" size="small" @click="handleDelete(record)">删除</a-button>
+                <a-button type="text" status="danger" size="small" @click="handleDelete(record)">删除</a-button>
               </a-space>
             </template>
           </a-table-column>
@@ -77,9 +77,6 @@
 import { reactive, ref, onMounted } from 'vue'
 import { Message, Modal } from '@arco-design/web-vue'
 import { getLoginLogPage, deleteLoginLog, clearLoginLog } from '@/api/system/loginLog'
-import { hasPermission } from '@/utils/permission'
-
-const hasPerm = hasPermission
 
 const loading = ref(false)
 const tableData = ref([])

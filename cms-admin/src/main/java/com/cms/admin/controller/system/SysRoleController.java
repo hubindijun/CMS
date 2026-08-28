@@ -1,5 +1,5 @@
 package com.cms.admin.controller.system;
-
+import org.springframework.security.access.prepost.PreAuthorize;
 import com.cms.admin.dto.system.RoleAddDTO;
 import com.cms.admin.dto.system.RoleQueryDTO;
 import com.cms.admin.dto.system.RoleUpdateDTO;
@@ -22,6 +22,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/system/role")
 @RequiredArgsConstructor
+@PreAuthorize("hasRole('admin')")
 public class SysRoleController {
 
     private final SysRoleService roleService;
@@ -33,7 +34,6 @@ public class SysRoleController {
      * @return 分页结果
      */
     @GetMapping("/page")
-    @PreAuthorize("@pms.hasPermission('system:role:query')")
     public Result<PageResult<RoleVO>> page(RoleQueryDTO dto) {
         return Result.ok(roleService.page(dto));
     }
@@ -44,7 +44,6 @@ public class SysRoleController {
      * @return 角色列表
      */
     @GetMapping("/list")
-    @PreAuthorize("@pms.hasPermission('system:role:query')")
     public Result<List<RoleVO>> list() {
         return Result.ok(roleService.listAll());
     }
@@ -56,7 +55,6 @@ public class SysRoleController {
      * @return 无
      */
     @PostMapping
-    @PreAuthorize("@pms.hasPermission('system:role:add')")
     public Result<Void> add(@RequestBody @Valid RoleAddDTO dto) {
         roleService.add(dto);
         return Result.ok();
@@ -69,7 +67,6 @@ public class SysRoleController {
      * @return 无
      */
     @PutMapping
-    @PreAuthorize("@pms.hasPermission('system:role:edit')")
     public Result<Void> update(@RequestBody @Valid RoleUpdateDTO dto) {
         roleService.update(dto);
         return Result.ok();
@@ -82,7 +79,6 @@ public class SysRoleController {
      * @return 无
      */
     @DeleteMapping("/{id}")
-    @PreAuthorize("@pms.hasPermission('system:role:delete')")
     public Result<Void> delete(@PathVariable Long id) {
         roleService.delete(id);
         return Result.ok();
@@ -96,7 +92,6 @@ public class SysRoleController {
      * @return 无
      */
     @PutMapping("/{id}/status")
-    @PreAuthorize("@pms.hasPermission('system:role:edit')")
     public Result<Void> toggleStatus(@PathVariable Long id, @RequestParam Integer status) {
         roleService.toggleStatus(id, status);
         return Result.ok();
@@ -109,7 +104,6 @@ public class SysRoleController {
      * @return 权限 ID 列表
      */
     @GetMapping("/{id}/permissions")
-    @PreAuthorize("@pms.hasPermission('system:role:permission')")
     public Result<List<Long>> getPermissionIds(@PathVariable Long id) {
         return Result.ok(roleService.getPermissionIds(id));
     }
@@ -122,7 +116,6 @@ public class SysRoleController {
      * @return 无
      */
     @PutMapping("/{id}/permissions")
-    @PreAuthorize("@pms.hasPermission('system:role:permission')")
     public Result<Void> assignPermissions(@PathVariable Long id, @RequestBody List<Long> permissionIds) {
         roleService.assignPermissions(id, permissionIds);
         return Result.ok();

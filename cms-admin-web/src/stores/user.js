@@ -2,22 +2,25 @@ import { defineStore } from 'pinia'
 import { login, logout, getUserInfo, getMenuTree } from '@/api/auth'
 import { resetRouter } from '@/router'
 
+const TOKEN_KEY = 'access_token'
+
 export const useUserStore = defineStore('user', {
   state: () => ({
+    token: sessionStorage.getItem(TOKEN_KEY) || '',
     userInfo: null,
-    menuTree: [],
-    permissions: []
+    menuTree: []
   }),
   actions: {
     async login(formData) {
-      await login(formData)
+      const token = await login(formData)
+      this.token = token
+      sessionStorage.setItem(TOKEN_KEY, token)
       await this.fetchUserInfo()
       await this.fetchMenuTree()
     },
     async fetchUserInfo() {
       const info = await getUserInfo()
       this.userInfo = info
-      this.permissions = info.permissions || []
     },
     async fetchMenuTree() {
       const tree = await getMenuTree()
@@ -27,9 +30,10 @@ export const useUserStore = defineStore('user', {
       try {
         await logout()
       } catch (e) {}
+      this.token = ''
       this.userInfo = null
       this.menuTree = []
-      this.permissions = []
+      sessionStorage.removeItem(TOKEN_KEY)
       resetRouter()
     }
   }

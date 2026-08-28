@@ -2,14 +2,20 @@ import axios from 'axios'
 import { Message } from '@arco-design/web-vue'
 import router from '@/router'
 
+const TOKEN_KEY = 'access_token'
+
 const request = axios.create({
   baseURL: '/',
   timeout: 30000,
-  withCredentials: true
+  withCredentials: false
 })
 
 request.interceptors.request.use(
   (config) => {
+    const token = sessionStorage.getItem(TOKEN_KEY)
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`
+    }
     return config
   },
   (error) => Promise.reject(error)

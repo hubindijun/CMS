@@ -29,7 +29,7 @@
       <!-- 操作栏 -->
       <div class="flex justify-between items-center mb-4 mt-4">
         <a-space>
-          <a-button v-if="hasPerm('system:user:add')" type="primary" @click="handleAdd">
+          <a-button type="primary" @click="handleAdd">
             <template #icon><icon-plus /></template>
             新增用户
           </a-button>
@@ -68,10 +68,10 @@
           <a-table-column title="操作" width="280" fixed="right">
             <template #cell="{ record }">
               <a-space size="small">
-                <a-button v-if="hasPerm('system:user:edit')" type="text" size="small" @click="handleEdit(record)">编辑</a-button>
-                <a-button v-if="hasPerm('system:user:edit')" type="text" size="small" @click="handleAssignRole(record)">分配角色</a-button>
-                <a-button v-if="hasPerm('system:user:resetPwd')" type="text" size="small" @click="handleResetPwd(record)">重置密码</a-button>
-                <a-button v-if="hasPerm('system:user:delete')" type="text" status="danger" size="small" :disabled="record.username === 'root'" @click="handleDelete(record)">删除</a-button>
+                <a-button type="text" size="small" @click="handleEdit(record)">编辑</a-button>
+                <a-button type="text" size="small" @click="handleAssignRole(record)">分配角色</a-button>
+                <a-button type="text" size="small" @click="handleResetPwd(record)">重置密码</a-button>
+                <a-button type="text" status="danger" size="small" :disabled="record.username === 'root'" @click="handleDelete(record)">删除</a-button>
               </a-space>
             </template>
           </a-table-column>
@@ -146,10 +146,6 @@ import { reactive, ref, onMounted } from 'vue'
 import { Message, Modal } from '@arco-design/web-vue'
 import { getUserPage, addUser, updateUser, deleteUser, toggleUserStatus, resetPassword } from '@/api/system/user'
 import { getRoleList } from '@/api/system/role'
-import { hasPermission } from '@/utils/permission'
-
-const hasPerm = hasPermission
-
 const loading = ref(false)
 const submitLoading = ref(false)
 const tableData = ref([])

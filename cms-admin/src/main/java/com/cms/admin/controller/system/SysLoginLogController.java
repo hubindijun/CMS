@@ -1,5 +1,5 @@
 package com.cms.admin.controller.system;
-
+import org.springframework.security.access.prepost.PreAuthorize;
 import com.cms.admin.dto.system.LoginLogQueryDTO;
 import com.cms.admin.service.SysLoginLogService;
 import com.cms.admin.vo.system.LoginLogVO;
@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/system/login-log")
 @RequiredArgsConstructor
+@PreAuthorize("hasRole('admin')")
 public class SysLoginLogController {
 
     private final SysLoginLogService loginLogService;
@@ -29,7 +30,6 @@ public class SysLoginLogController {
      * @return 分页结果
      */
     @GetMapping("/page")
-    @PreAuthorize("@pms.hasPermission('system:loginLog:query')")
     public Result<PageResult<LoginLogVO>> page(LoginLogQueryDTO dto) {
         return Result.ok(loginLogService.page(dto));
     }
@@ -41,7 +41,6 @@ public class SysLoginLogController {
      * @return 无
      */
     @DeleteMapping("/{id}")
-    @PreAuthorize("@pms.hasPermission('system:loginLog:delete')")
     public Result<Void> delete(@PathVariable Long id) {
         loginLogService.delete(id);
         return Result.ok();
@@ -53,7 +52,6 @@ public class SysLoginLogController {
      * @return 无
      */
     @DeleteMapping("/clear")
-    @PreAuthorize("@pms.hasPermission('system:loginLog:remove')")
     public Result<Void> clear() {
         loginLogService.clear();
         return Result.ok();

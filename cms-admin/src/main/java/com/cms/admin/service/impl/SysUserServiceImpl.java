@@ -100,8 +100,8 @@ public class SysUserServiceImpl implements SysUserService {
         if (user == null) {
             throw new BusinessException("用户不存在");
         }
-        if (CommonConstant.ROOT_ROLE_CODE.equals(user.getUsername())) {
-            throw new BusinessException("root用户不可修改");
+        if (CommonConstant.ADMIN_ROLE_CODE.equals(user.getUsername())) {
+            throw new BusinessException("admin用户不可修改");
         }
         if (StringUtils.hasText(dto.getPhone())) {
             SysUser phoneExist = userMapper.selectOne(
@@ -131,8 +131,8 @@ public class SysUserServiceImpl implements SysUserService {
         if (user == null) {
             throw new BusinessException("用户不存在");
         }
-        if (CommonConstant.ROOT_ROLE_CODE.equals(user.getUsername())) {
-            throw new BusinessException("root用户不可删除");
+        if (CommonConstant.ADMIN_ROLE_CODE.equals(user.getUsername())) {
+            throw new BusinessException("admin用户不可删除");
         }
         userMapper.deleteById(id);
         userRoleMapper.delete(new LambdaQueryWrapper<SysUserRole>().eq(SysUserRole::getUserId, id));
@@ -144,8 +144,8 @@ public class SysUserServiceImpl implements SysUserService {
         if (user == null) {
             throw new BusinessException("用户不存在");
         }
-        if (CommonConstant.ROOT_ROLE_CODE.equals(user.getUsername())) {
-            throw new BusinessException("root用户不可禁用");
+        if (CommonConstant.ADMIN_ROLE_CODE.equals(user.getUsername())) {
+            throw new BusinessException("admin用户不可禁用");
         }
         user.setStatus(status);
         userMapper.updateById(user);
@@ -157,8 +157,8 @@ public class SysUserServiceImpl implements SysUserService {
         if (user == null) {
             throw new BusinessException("用户不存在");
         }
-        if (CommonConstant.ROOT_ROLE_CODE.equals(user.getUsername())) {
-            throw new BusinessException("root用户密码不可重置");
+        if (CommonConstant.ADMIN_ROLE_CODE.equals(user.getUsername())) {
+            throw new BusinessException("admin用户密码不可重置");
         }
         user.setPassword(passwordEncoder.encode(newPassword));
         userMapper.updateById(user);

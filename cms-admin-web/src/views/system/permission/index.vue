@@ -13,7 +13,7 @@
         >
           <template #prefix><icon-search /></template>
         </a-input>
-        <a-button v-if="hasPerm('system:permission:add')" type="primary" @click="handleAdd">
+        <a-button type="primary" @click="handleAdd">
           <template #icon><icon-plus /></template>
           新增权限
         </a-button>
@@ -54,10 +54,9 @@
           <a-table-column title="操作" width="200" fixed="right">
             <template #cell="{ record }">
               <a-space size="small">
-                <a-button v-if="hasPerm('system:permission:add')" type="text" size="small" @click="handleAddChild(record)">添加子级</a-button>
-                <a-button v-if="hasPerm('system:permission:edit')" type="text" size="small" @click="handleEdit(record)">编辑</a-button>
+                <a-button type="text" size="small" @click="handleAddChild(record)">添加子级</a-button>
+                <a-button type="text" size="small" @click="handleEdit(record)">编辑</a-button>
                 <a-button
-                  v-if="hasPerm('system:permission:delete')"
                   type="text"
                   status="danger"
                   size="small"
@@ -134,10 +133,6 @@ import {
   updatePermission,
   deletePermission
 } from '@/api/system/permission'
-import { hasPermission } from '@/utils/permission'
-
-const hasPerm = hasPermission
-
 const loading = ref(false)
 const submitLoading = ref(false)
 const tableData = ref([])

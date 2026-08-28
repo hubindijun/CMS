@@ -23,4 +23,16 @@
         ORDER BY p.sort ASC
     </select>
 
+    <select id="selectResourcePathsByUserId" resultType="java.lang.String">
+        SELECT DISTINCT p.resource_path
+        FROM sys_permission p
+        INNER JOIN sys_role_permission rp ON p.id = rp.permission_id
+        INNER JOIN sys_user_role ur ON rp.role_id = ur.role_id
+        WHERE ur.user_id = #{userId}
+          AND p.status = 1
+          AND p.deleted = 0
+          AND p.resource_path IS NOT NULL
+          AND p.resource_path != ''
+    </select>
+
 </mapper>

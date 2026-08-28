@@ -26,7 +26,7 @@
       <!-- 操作栏 -->
       <div class="flex justify-between items-center mb-4 mt-4">
         <a-space>
-          <a-button v-if="hasPerm('system:role:add')" type="primary" @click="handleAdd">
+          <a-button type="primary" @click="handleAdd">
             <template #icon><icon-plus /></template>
             新增角色
           </a-button>
@@ -59,10 +59,9 @@
           <a-table-column title="操作" width="260" fixed="right">
             <template #cell="{ record }">
               <a-space size="small">
-                <a-button v-if="hasPerm('system:role:edit')" type="text" size="small" @click="handleEdit(record)">编辑</a-button>
-                <a-button v-if="hasPerm('system:role:permission')" type="text" size="small" @click="handleAssignPermission(record)">分配权限</a-button>
+                <a-button type="text" size="small" @click="handleEdit(record)">编辑</a-button>
+                <a-button type="text" size="small" @click="handleAssignPermission(record)">分配权限</a-button>
                 <a-button
-                  v-if="hasPerm('system:role:delete')"
                   type="text"
                   status="danger"
                   size="small"
@@ -144,9 +143,6 @@ import {
   assignRolePermissions
 } from '@/api/system/role'
 import { getPermissionTree } from '@/api/system/permission'
-import { hasPermission } from '@/utils/permission'
-
-const hasPerm = hasPermission
 
 const loading = ref(false)
 const submitLoading = ref(false)

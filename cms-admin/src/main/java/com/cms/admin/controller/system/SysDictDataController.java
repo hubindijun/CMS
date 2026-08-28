@@ -1,5 +1,5 @@
 package com.cms.admin.controller.system;
-
+import org.springframework.security.access.prepost.PreAuthorize;
 import com.cms.admin.dto.system.DictDataQueryDTO;
 import com.cms.admin.entity.SysDictData;
 import com.cms.admin.service.SysDictDataService;
@@ -22,6 +22,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/system/dict/data")
 @RequiredArgsConstructor
+@PreAuthorize("hasRole('admin')")
 public class SysDictDataController {
 
     private final SysDictDataService dictDataService;
@@ -33,7 +34,6 @@ public class SysDictDataController {
      * @return 分页结果
      */
     @GetMapping("/page")
-    @PreAuthorize("@pms.hasPermission('system:dict:query')")
     public Result<PageResult<DictDataVO>> page(DictDataQueryDTO dto) {
         return Result.ok(dictDataService.page(dto));
     }
@@ -45,7 +45,6 @@ public class SysDictDataController {
      * @return 字典数据信息
      */
     @GetMapping("/{id}")
-    @PreAuthorize("@pms.hasPermission('system:dict:query')")
     public Result<DictDataVO> getById(@PathVariable Long id) {
         return Result.ok(dictDataService.getById(id));
     }
@@ -57,7 +56,6 @@ public class SysDictDataController {
      * @return 字典数据列表
      */
     @GetMapping("/byType")
-    @PreAuthorize("@pms.hasPermission('system:dict:query')")
     public Result<List<DictDataVO>> listByType(@RequestParam String dictType) {
         return Result.ok(dictDataService.listByType(dictType));
     }
@@ -69,7 +67,6 @@ public class SysDictDataController {
      * @return 无
      */
     @PostMapping
-    @PreAuthorize("@pms.hasPermission('system:dict:add')")
     public Result<Void> add(@RequestBody @Valid SysDictData dictData) {
         dictDataService.add(dictData);
         return Result.ok();
@@ -82,7 +79,6 @@ public class SysDictDataController {
      * @return 无
      */
     @PutMapping
-    @PreAuthorize("@pms.hasPermission('system:dict:edit')")
     public Result<Void> update(@RequestBody @Valid SysDictData dictData) {
         dictDataService.update(dictData);
         return Result.ok();
@@ -95,7 +91,6 @@ public class SysDictDataController {
      * @return 无
      */
     @DeleteMapping("/{id}")
-    @PreAuthorize("@pms.hasPermission('system:dict:delete')")
     public Result<Void> delete(@PathVariable Long id) {
         dictDataService.delete(id);
         return Result.ok();

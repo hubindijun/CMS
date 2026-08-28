@@ -8,7 +8,7 @@ CMS 通用后台管理脚手架，基于 Spring Boot 3.x + Vue 3 的电商后台
 
 ## 技术栈
 
-**后端:** Java 17 + Spring Boot 3.3 + Spring Security + Spring Session Redis + MyBatis-Plus 3.5 + MySQL 8 + Redis 6 + Knife4j + Hutool
+**后端:** Java 17 + Spring Boot 3.3 + Spring Security + Token Redis（无状态） + MyBatis-Plus 3.5 + MySQL 8 + Redis 6 + Knife4j + Hutool
 
 **前端:** Vue 3 + Vite 5 + Arco Design Vue（按需引入）+ TailwindCSS 3 + Pinia + Vue Router 4 + Axios
 
@@ -40,15 +40,13 @@ cms/
 - 分页查询 DTO 继承 `PageQuery`（含 pageNum, pageSize）
 - 逻辑删除：`deleted` 字段，MyBatis-Plus 自动处理（已删=1，未删=0）
 - 主键自增：`IdType.AUTO`
-- 权限标识规范：`模块:功能:操作`，如 `system:user:add`
-
 ### 权限体系（RBAC）
-- 用户 → 角色 → 权限（多对多两级关联）
-- 权限类型：1目录 / 2菜单 / 3按钮
-- 后端接口鉴权：`@PreAuthorize("@pms.hasPermission('system:user:add')")`
-- 超级管理员拥有 `*:*:*` 权限，匹配所有
-- 会话存储：Spring Session + Redis（cookie 方式）
-- 登录认证：表单登录 + 图片验证码 + 失败锁定
+- 用户 → 角色 → 权限（多对多两级关联），多角色取并集
+- 权限类型：1目录 / 2菜单 / 3资源（resource_path，Ant 风格）
+- 后端接口鉴权：角色驱动，`@PreAuthorize("hasRole('角色编码')")`，系统模块默认 `hasRole('admin')`
+- 前端菜单：按角色权限动态渲染，无权限的菜单不显示、路由不注册
+- 认证方式：Bearer Token + Redis，2 小时滑动过期，无状态分布式
+- 登录认证：自定义登录接口 + 图片验证码 + 失败锁定
 
 ### 常用命令
 ```bash
@@ -86,16 +84,13 @@ cms-admin-web/src/
 - API 路径统一带 `/api` 前缀，Vite 代理到后端 `http://localhost:8080`
 - 请求封装：`utils/request.js`，自动处理 401 跳转登录、统一错误提示
 - 响应拦截器直接返回 `res.data`（已解包一层 Result）
-- 认证方式：cookie-based session（`withCredentials: true`）
+- 认证方式：Bearer Token，存储在 sessionStorage
+- 请求拦截器：自动添加 `Authorization: Bearer {token}` header
+- `withCredentials: false`，不依赖 cookie
 - 路由守卫：首次进入时拉取用户信息和菜单树
 - Arco Design 组件按需自动引入（unplugin-vue-components）
 - 自动导入 Vue / Vue Router / Pinia API（unplugin-auto-import）
 - 路径别名：`@` → `src/`
-
-### 按钮级权限
-- `utils/permission.js` 提供权限检查工具
-- 前端权限列表存在 Pinia user store 中（`permissions` 数组）
-- 从后端 `/api/auth/userInfo` 获取，随用户信息一起返回
 
 ### 常用命令
 ```bash
@@ -108,7 +103,7 @@ npm run preview   # 预览构建产物
 
 ## 默认账号
 
-- 用户名：`root`
+- 用户名：`admin`
 - 密码：`admin123`
 - 角色：超级管理员
 

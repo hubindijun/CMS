@@ -1,6 +1,5 @@
 package com.cms.admin.security;
 
-import com.cms.admin.util.CaptchaService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,17 +10,14 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.AuthenticationFailureHandler;
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.List;
 
 /**
- * Spring Security 配置
+ * Spring Security 配置（Token 认证 + URL 级动态权限）
  */
 @Configuration
 @EnableWebSecurity
@@ -29,14 +25,10 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final CustomUserDetailsService userDetailsService;
-    private final AuthenticationSuccessHandler successHandler;
-    private final AuthenticationFailureHandler failureHandler;
-    private final LogoutSuccessHandler logoutSuccessHandler;
     private final DefaultAccessDeniedHandler accessDeniedHandler;
     private final DefaultAuthenticationEntryPoint authenticationEntryPoint;
-    private final CaptchaService captchaService;
-    private final LoginAttemptService loginAttemptService;
+    private final CaptchaFilter captchaFilter;
+    private final TokenAuthenticationFilter tokenAuthenticationFilter;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -44,7 +36,7 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .sessionManagement(session -> session
-                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             )
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(
@@ -58,32 +50,14 @@ public class SecurityConfig {
                 ).permitAll()
                 .anyRequest().authenticated()
             )
-            .formLogin(form -> form
-                .loginProcessingUrl("/api/auth/login")
-                .usernameParameter("username")
-                .passwordParameter("password")
-                .successHandler(successHandler)
-                .failureHandler(failureHandler)
-                .permitAll()
-            )
-            .logout(logout -> logout
-                .logoutUrl("/api/auth/logout")
-                .logoutSuccessHandler(logoutSuccessHandler)
-                .permitAll()
-            )
             .exceptionHandling(ex -> ex
                 .accessDeniedHandler(accessDeniedHandler)
                 .authenticationEntryPoint(authenticationEntryPoint)
             )
-            .addFilterBefore(captchaFilter(), UsernamePasswordAuthenticationFilter.class)
-            .userDetailsService(userDetailsService);
+            .addFilterBefore(captchaFilter, UsernamePasswordAuthenticationFilter.class)
+            .addFilterBefore(tokenAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
-    }
-
-    @Bean
-    public CaptchaFilter captchaFilter() {
-        return new CaptchaFilter(captchaService, loginAttemptService);
     }
 
     @Bean

@@ -7,12 +7,14 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.LockedException;
+import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 
 /**
  * 验证码校验过滤器，在用户名密码认证前校验验证码及登录失败锁定状态
  */
+@Component
 public class CaptchaFilter extends OncePerRequestFilter {
 
     private final CaptchaService captchaService;

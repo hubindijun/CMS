@@ -107,8 +107,8 @@ public class SysRoleServiceImpl implements SysRoleService {
     public void delete(Long id) {
         SysRole role = roleMapper.selectById(id);
         if (role == null) return;
-        if (CommonConstant.ROOT_ROLE_CODE.equals(role.getCode())) {
-            throw new BusinessException("root角色不可删除");
+        if (CommonConstant.ADMIN_ROLE_CODE.equals(role.getCode())) {
+            throw new BusinessException("admin角色不可删除");
         }
         roleMapper.deleteById(id);
         rolePermissionMapper.delete(new LambdaQueryWrapper<SysRolePermission>()
@@ -122,8 +122,8 @@ public class SysRoleServiceImpl implements SysRoleService {
         if (role == null) {
             throw new BusinessException("角色不存在");
         }
-        if (CommonConstant.ROOT_ROLE_CODE.equals(role.getCode())) {
-            throw new BusinessException("root角色不可禁用");
+        if (CommonConstant.ADMIN_ROLE_CODE.equals(role.getCode())) {
+            throw new BusinessException("admin角色不可禁用");
         }
         role.setStatus(status);
         roleMapper.updateById(role);
@@ -143,8 +143,8 @@ public class SysRoleServiceImpl implements SysRoleService {
         if (role == null) {
             throw new BusinessException("角色不存在");
         }
-        if (CommonConstant.ROOT_ROLE_CODE.equals(role.getCode())) {
-            throw new BusinessException("root角色拥有所有权限，无需分配");
+        if (CommonConstant.ADMIN_ROLE_CODE.equals(role.getCode())) {
+            throw new BusinessException("admin角色拥有所有权限，无需分配");
         }
         rolePermissionMapper.delete(new LambdaQueryWrapper<SysRolePermission>()
                 .eq(SysRolePermission::getRoleId, id));

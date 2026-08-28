@@ -1,5 +1,5 @@
 package com.cms.admin.controller.system;
-
+import org.springframework.security.access.prepost.PreAuthorize;
 import com.cms.admin.dto.system.DictTypeQueryDTO;
 import com.cms.admin.entity.SysDictType;
 import com.cms.admin.service.SysDictTypeService;
@@ -22,6 +22,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/system/dict/type")
 @RequiredArgsConstructor
+@PreAuthorize("hasRole('admin')")
 public class SysDictTypeController {
 
     private final SysDictTypeService dictTypeService;
@@ -33,7 +34,6 @@ public class SysDictTypeController {
      * @return 分页结果
      */
     @GetMapping("/page")
-    @PreAuthorize("@pms.hasPermission('system:dict:query')")
     public Result<PageResult<DictTypeVO>> page(DictTypeQueryDTO dto) {
         return Result.ok(dictTypeService.page(dto));
     }
@@ -44,7 +44,6 @@ public class SysDictTypeController {
      * @return 字典类型列表
      */
     @GetMapping("/list")
-    @PreAuthorize("@pms.hasPermission('system:dict:query')")
     public Result<List<DictTypeVO>> list() {
         return Result.ok(dictTypeService.listAll());
     }
@@ -56,7 +55,6 @@ public class SysDictTypeController {
      * @return 字典类型信息
      */
     @GetMapping("/{id}")
-    @PreAuthorize("@pms.hasPermission('system:dict:query')")
     public Result<DictTypeVO> getById(@PathVariable Long id) {
         return Result.ok(dictTypeService.getById(id));
     }
@@ -68,7 +66,6 @@ public class SysDictTypeController {
      * @return 无
      */
     @PostMapping
-    @PreAuthorize("@pms.hasPermission('system:dict:add')")
     public Result<Void> add(@RequestBody @Valid SysDictType dictType) {
         dictTypeService.add(dictType);
         return Result.ok();
@@ -81,7 +78,6 @@ public class SysDictTypeController {
      * @return 无
      */
     @PutMapping
-    @PreAuthorize("@pms.hasPermission('system:dict:edit')")
     public Result<Void> update(@RequestBody @Valid SysDictType dictType) {
         dictTypeService.update(dictType);
         return Result.ok();
@@ -94,7 +90,6 @@ public class SysDictTypeController {
      * @return 无
      */
     @DeleteMapping("/{id}")
-    @PreAuthorize("@pms.hasPermission('system:dict:delete')")
     public Result<Void> delete(@PathVariable Long id) {
         dictTypeService.delete(id);
         return Result.ok();

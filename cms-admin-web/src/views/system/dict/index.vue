@@ -6,7 +6,7 @@
         <a-card>
           <template #title>字典类型</template>
           <template #extra>
-            <a-button v-if="hasPerm('system:dict:add')" type="primary" size="small" @click="handleTypeAdd">
+            <a-button type="primary" size="small" @click="handleTypeAdd">
               <template #icon><icon-plus /></template>
               新增
             </a-button>
@@ -35,8 +35,8 @@
               <a-table-column title="操作" width="120">
                 <template #cell="{ record }">
                   <a-space size="mini">
-                    <a-button v-if="hasPerm('system:dict:edit')" type="text" size="small" @click="handleTypeEdit(record)">编辑</a-button>
-                    <a-button v-if="hasPerm('system:dict:delete')" type="text" status="danger" size="small" @click="handleTypeDelete(record)">删除</a-button>
+                    <a-button type="text" size="small" @click="handleTypeEdit(record)">编辑</a-button>
+                    <a-button type="text" status="danger" size="small" @click="handleTypeDelete(record)">删除</a-button>
                   </a-space>
                 </template>
               </a-table-column>
@@ -53,7 +53,7 @@
             <a-tag v-if="currentDictType" color="arcoblue" style="margin-left: 8px">{{ currentDictType }}</a-tag>
           </template>
           <template #extra>
-            <a-button v-if="hasPerm('system:dict:add')" type="primary" size="small" :disabled="!currentDictType" @click="handleDataAdd">
+            <a-button type="primary" size="small" :disabled="!currentDictType" @click="handleDataAdd">
               <template #icon><icon-plus /></template>
               新增
             </a-button>
@@ -84,8 +84,8 @@
               <a-table-column title="操作" width="120" fixed="right">
                 <template #cell="{ record }">
                   <a-space size="mini">
-                    <a-button v-if="hasPerm('system:dict:edit')" type="text" size="small" @click="handleDataEdit(record)">编辑</a-button>
-                    <a-button v-if="hasPerm('system:dict:delete')" type="text" status="danger" size="small" @click="handleDataDelete(record)">删除</a-button>
+                    <a-button type="text" size="small" @click="handleDataEdit(record)">编辑</a-button>
+                    <a-button type="text" status="danger" size="small" @click="handleDataDelete(record)">删除</a-button>
                   </a-space>
                 </template>
               </a-table-column>
@@ -198,9 +198,6 @@ import {
   updateDictData,
   deleteDictData
 } from '@/api/system/dict'
-import { hasPermission } from '@/utils/permission'
-
-const hasPerm = hasPermission
 
 // 字典类型
 const typeLoading = ref(false)
