@@ -45,7 +45,6 @@
         @page-size-change="handleSizeChange"
         :bordered="false"
       >
-        <template #columns>
           <a-table-column title="用户名" data-index="username" />
           <a-table-column title="昵称" data-index="nickname" />
           <a-table-column title="手机号" data-index="phone" />
@@ -75,7 +74,6 @@
               </a-space>
             </template>
           </a-table-column>
-        </template>
       </a-table>
     </a-card>
 

@@ -22,7 +22,6 @@
             size="small"
             :bordered="false"
           >
-            <template #columns>
               <a-table-column title="字典名称" data-index="dictName" />
               <a-table-column title="字典类型" data-index="dictType" />
               <a-table-column title="状态" data-index="status" width="70">
@@ -40,7 +39,6 @@
                   </a-space>
                 </template>
               </a-table-column>
-            </template>
           </a-table>
         </a-card>
       </a-col>
@@ -67,7 +65,6 @@
             size="small"
             :bordered="false"
           >
-            <template #columns>
               <a-table-column title="字典标签" data-index="dictLabel" width="120" />
               <a-table-column title="字典键值" data-index="dictValue" width="120" />
               <a-table-column title="排序" data-index="dictSort" width="80" />
@@ -89,7 +86,6 @@
                   </a-space>
                 </template>
               </a-table-column>
-            </template>
           </a-table>
         </a-card>
       </a-col>

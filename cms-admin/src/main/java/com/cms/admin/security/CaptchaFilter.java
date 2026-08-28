@@ -13,8 +13,9 @@ import java.io.IOException;
 
 /**
  * 验证码校验过滤器，在用户名密码认证前校验验证码及登录失败锁定状态
+ * 已废弃，验证码校验统一在 AuthController.login() 中处理
  */
-@Component
+@Deprecated
 public class CaptchaFilter extends OncePerRequestFilter {
 
     private final CaptchaService captchaService;

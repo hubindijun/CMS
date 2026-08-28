@@ -29,7 +29,6 @@
         :tree-props="{ children: 'children' }"
         :default-expand-all="true"
       >
-        <template #columns>
           <a-table-column title="权限名称" data-index="name" tree-cell />
           <a-table-column title="类型" data-index="type" width="100">
             <template #cell="{ record }">
@@ -65,7 +64,6 @@
               </a-space>
             </template>
           </a-table-column>
-        </template>
       </a-table>
     </a-card>
 

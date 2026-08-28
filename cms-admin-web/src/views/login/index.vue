@@ -112,7 +112,7 @@ const rules = {
 async function refreshCaptcha() {
   try {
     const data = await getCaptcha()
-    captchaImg.value = data.img
+    captchaImg.value = data.image
     captchaKey.value = data.key
   } catch (e) {
     // error handled by interceptor

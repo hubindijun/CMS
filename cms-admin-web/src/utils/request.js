@@ -21,12 +21,16 @@ request.interceptors.request.use(
   (error) => Promise.reject(error)
 )
 
+let is401Handled = false
+
 async function handle401() {
-  const { useUserStore } = await import('@/stores/user')
-  const userStore = useUserStore()
-  userStore.logout()
+  if (is401Handled) return
+  is401Handled = true
+  const TOKEN_KEY = 'access_token'
+  sessionStorage.removeItem(TOKEN_KEY)
   Message.error('登录已过期，请重新登录')
   router.push('/login')
+  setTimeout(() => { is401Handled = false }, 1000)
 }
 
 request.interceptors.response.use(

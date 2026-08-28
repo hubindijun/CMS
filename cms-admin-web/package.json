@@ -13,7 +13,6 @@
     "vue-router": "^4.3.0",
     "pinia": "^2.1.7",
     "@arco-design/web-vue": "^2.56.0",
-    "@arco-design/web-vue/es/icon": "^2.56.0",
     "axios": "^1.7.0",
     "nprogress": "^0.2.0"
   },

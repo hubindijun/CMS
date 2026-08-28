@@ -42,36 +42,34 @@
         @page-size-change="handleSizeChange"
         :bordered="false"
       >
-        <template #columns>
-          <a-table-column title="角色名称" data-index="name" />
-          <a-table-column title="角色编码" data-index="code" />
-          <a-table-column title="描述" data-index="description" />
-          <a-table-column title="状态" data-index="status" width="100">
-            <template #cell="{ record }">
-              <a-switch
-                :checked="record.status === 1"
-                :disabled="record.code === 'root'"
-                @change="(v) => handleToggleStatus(record, v)"
-              />
-            </template>
-          </a-table-column>
-          <a-table-column title="创建时间" data-index="createTime" width="180" />
-          <a-table-column title="操作" width="260" fixed="right">
-            <template #cell="{ record }">
-              <a-space size="small">
-                <a-button type="text" size="small" @click="handleEdit(record)">编辑</a-button>
-                <a-button type="text" size="small" @click="handleAssignPermission(record)">分配权限</a-button>
-                <a-button
-                  type="text"
-                  status="danger"
-                  size="small"
-                  :disabled="record.code === 'root'"
-                  @click="handleDelete(record)"
-                >删除</a-button>
-              </a-space>
-            </template>
-          </a-table-column>
-        </template>
+        <a-table-column title="角色名称" data-index="name" />
+        <a-table-column title="角色编码" data-index="code" />
+        <a-table-column title="描述" data-index="description" />
+        <a-table-column title="状态" data-index="status" width="100">
+          <template #cell="{ record }">
+            <a-switch
+              :checked="record.status === 1"
+              :disabled="record.code === 'admin'"
+              @change="(v) => handleToggleStatus(record, v)"
+            />
+          </template>
+        </a-table-column>
+        <a-table-column title="创建时间" data-index="createTime" width="180" />
+        <a-table-column title="操作" width="260" fixed="right">
+          <template #cell="{ record }">
+            <a-space size="small">
+              <a-button type="text" size="small" @click="handleEdit(record)">编辑</a-button>
+              <a-button type="text" size="small" @click="handleAssignPermission(record)">分配权限</a-button>
+              <a-button
+                type="text"
+                status="danger"
+                size="small"
+                :disabled="record.code === 'admin'"
+                @click="handleDelete(record)"
+              >删除</a-button>
+            </a-space>
+          </template>
+        </a-table-column>
       </a-table>
     </a-card>
 

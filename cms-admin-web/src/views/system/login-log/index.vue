@@ -45,7 +45,6 @@
         @page-size-change="handleSizeChange"
         :bordered="false"
       >
-        <template #columns>
           <a-table-column title="用户名" data-index="username" width="120" />
           <a-table-column title="IP地址" data-index="ip" width="140" />
           <a-table-column title="地点" data-index="location" width="160" />
@@ -67,7 +66,6 @@
               </a-space>
             </template>
           </a-table-column>
-        </template>
       </a-table>
     </a-card>
   </div>
