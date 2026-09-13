@@ -22,6 +22,12 @@ mybatis-plus:
       logic-delete-value: 1
       logic-not-delete-value: 0
 
+pagehelper:
+  helper-dialect: mysql
+  reasonable: true
+  support-methods-arguments: true
+  params: count=countSql
+
 knife4j:
   enable: true
   openapi:
