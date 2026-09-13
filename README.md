@@ -8,9 +8,12 @@
 - **Java 17+** + **Spring Boot 3.3.x**
 - **Spring Security** — 认证授权
 - **Token + Redis** — 无状态分布式认证（Bearer Token，2小时滑动过期）
-- **MyBatis-Plus 3.5.x** — ORM + 代码生成
+- **MyBatis-Plus 3.5.x** — ORM 增强（BaseMapper CRUD + 逻辑删除 + 自动填充）
+- **PageHelper** — 分页插件
 - **MySQL 8.0** — 主数据库
 - **Redis 6.x** — Token 存储 + 权限缓存 + 验证码
+- **Redisson** — 分布式锁
+- **Kafka** — 消息队列
 - **Knife4j / Swagger UI** — API 文档
 - **Hutool** — 工具类库
 
@@ -229,12 +232,15 @@ npm run dev
 ### 后端
 - 统一返回格式：`Result<T>` { code, message, data }
 - 统一分页格式：`PageResult<T>` { list, total, pageNum, pageSize }
-- 代码分层：controller → service → mapper
+- 代码分层：controller → service → mapper（XML 写 SQL，Service 只做业务逻辑）
 - 实体分层：entity（数据库实体）、dto（入参传输）、vo（出参视图）
+- ORM：MyBatis-Plus + XML，SQL 统一写在 XML Mapper 中，Service 层不出现 QueryWrapper
+- 分页：PageHelper，`PageHelper.startPage()` + 普通查询方法
 - 逻辑删除：deleted 字段，MyBatis-Plus 自动处理
 - 基础实体：`BaseEntity` 包含 id、createTime、updateTime、createBy、updateBy、deleted
 - 后端鉴权：`@PreAuthorize("hasRole('角色编码')")`，角色驱动
 - 认证方式：Bearer Token + Redis，无状态分布式认证
+- 工具类：RedisService / RedissonLockService / KafkaService（Spring Bean 注入）+ RsaUtils / AesUtils（静态工具）
 
 ### 前端
 - 页面组件放在 `views/`，按业务模块分目录
