@@ -25,6 +25,14 @@ public interface SysPermissionService {
     List<PermissionVO> menuTreeByUserId(Long userId);
 
     /**
+     * 根据用户名查询菜单树（仅目录和菜单，不含按钮）
+     *
+     * @param username 用户名
+     * @return 菜单树
+     */
+    List<PermissionVO> menuTreeByUsername(String username);
+
+    /**
      * 新增权限
      *
      * @param dto 权限信息

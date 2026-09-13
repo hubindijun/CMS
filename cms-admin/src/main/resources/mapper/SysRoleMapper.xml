@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cms.admin.mapper.SysRoleMapper">
+
+    <resultMap id="roleVoMap" type="com.cms.admin.vo.system.RoleVO">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="code" property="code"/>
+        <result column="description" property="description"/>
+        <result column="status" property="status"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+
+    <select id="selectPageList" resultMap="roleVoMap">
+        SELECT id, name, code, description, status, create_time
+        FROM sys_role
+        <where>
+            deleted = 0
+            <if test="dto.name != null and dto.name != ''">
+                AND name LIKE CONCAT('%', #{dto.name}, '%')
+            </if>
+            <if test="dto.status != null">
+                AND status = #{dto.status}
+            </if>
+        </where>
+        ORDER BY id DESC
+    </select>
+
+    <select id="selectAllEnabled" resultMap="roleVoMap">
+        SELECT id, name, code, description, status, create_time
+        FROM sys_role
+        WHERE deleted = 0
+          AND status = 1
+        ORDER BY id ASC
+    </select>
+
+    <select id="selectByCode" resultType="com.cms.admin.entity.SysRole">
+        SELECT *
+        FROM sys_role
+        WHERE deleted = 0
+          AND code = #{code}
+        LIMIT 1
+    </select>
+
+    <select id="selectByUserId" resultType="com.cms.admin.entity.SysRole">
+        SELECT r.*
+        FROM sys_role r
+        INNER JOIN sys_user_role ur ON r.id = ur.role_id
+        WHERE r.deleted = 0
+          AND ur.user_id = #{userId}
+    </select>
+
+</mapper>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cms.admin.mapper.SysLoginLogMapper">
+
+    <resultMap id="loginLogVoMap" type="com.cms.admin.vo.system.LoginLogVO">
+        <id column="id" property="id"/>
+        <result column="username" property="username"/>
+        <result column="ip" property="ip"/>
+        <result column="location" property="location"/>
+        <result column="browser" property="browser"/>
+        <result column="os" property="os"/>
+        <result column="status" property="status"/>
+        <result column="message" property="message"/>
+        <result column="login_time" property="loginTime"/>
+    </resultMap>
+
+    <select id="selectPageList" resultMap="loginLogVoMap">
+        SELECT id, username, ip, location, browser, os, status, message, login_time
+        FROM sys_login_log
+        <where>
+            deleted = 0
+            <if test="dto.username != null and dto.username != ''">
+                AND username LIKE CONCAT('%', #{dto.username}, '%')
+            </if>
+            <if test="dto.status != null">
+                AND status = #{dto.status}
+            </if>
+            <if test="dto.startTime != null and dto.startTime != ''">
+                AND login_time &gt;= CONCAT(#{dto.startTime}, ' 00:00:00')
+            </if>
+            <if test="dto.endTime != null and dto.endTime != ''">
+                AND login_time &lt;= CONCAT(#{dto.endTime}, ' 23:59:59')
+            </if>
+        </where>
+        ORDER BY login_time DESC
+    </select>
+
+    <delete id="clearAll">
+        DELETE FROM sys_login_log
+    </delete>
+
+</mapper>

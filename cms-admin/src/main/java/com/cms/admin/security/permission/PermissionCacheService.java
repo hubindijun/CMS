@@ -4,7 +4,6 @@ import com.cms.admin.mapper.SysPermissionMapper;
 import com.cms.admin.mapper.SysUserMapper;
 import com.cms.admin.entity.SysUser;
 import com.cms.common.constant.CommonConstant;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
@@ -38,9 +37,7 @@ public class PermissionCacheService {
             return cached;
         }
 
-        SysUser user = userMapper.selectOne(
-                new LambdaQueryWrapper<SysUser>().eq(SysUser::getUsername, username)
-        );
+        SysUser user = userMapper.selectByUsername(username);
         if (user == null) {
             return List.of();
         }

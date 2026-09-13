@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cms.admin.mapper.SysRolePermissionMapper">
+
+    <select id="selectByRoleId" resultType="com.cms.admin.entity.SysRolePermission">
+        SELECT id, role_id, permission_id
+        FROM sys_role_permission
+        WHERE role_id = #{roleId}
+    </select>
+
+    <delete id="deleteByRoleId">
+        DELETE FROM sys_role_permission
+        WHERE role_id = #{roleId}
+    </delete>
+
+    <insert id="batchInsert">
+        INSERT INTO sys_role_permission (role_id, permission_id)
+        VALUES
+        <foreach collection="permissionIds" item="permId" separator=",">
+            (#{roleId}, #{permId})
+        </foreach>
+    </insert>
+
+</mapper>

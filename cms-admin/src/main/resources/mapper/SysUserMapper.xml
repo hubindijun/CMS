@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cms.admin.mapper.SysUserMapper">
+
+    <resultMap id="userVoMap" type="com.cms.admin.vo.system.UserVO">
+        <id column="id" property="id"/>
+        <result column="username" property="username"/>
+        <result column="nickname" property="nickname"/>
+        <result column="email" property="email"/>
+        <result column="phone" property="phone"/>
+        <result column="avatar" property="avatar"/>
+        <result column="status" property="status"/>
+        <result column="create_time" property="createTime"/>
+        <result column="role_ids" property="roleIds" typeHandler="com.cms.admin.handler.StringToListLongHandler"/>
+        <result column="role_names" property="roleNames" typeHandler="com.cms.admin.handler.StringToListStringHandler"/>
+    </resultMap>
+
+    <sql id="userVoColumns">
+        u.id,
+        u.username,
+        u.nickname,
+        u.email,
+        u.phone,
+        u.avatar,
+        u.status,
+        u.create_time,
+        GROUP_CONCAT(r.id ORDER BY r.id) AS role_ids,
+        GROUP_CONCAT(r.name ORDER BY r.id) AS role_names
+    </sql>
+
+    <sql id="userJoin">
+        FROM sys_user u
+        LEFT JOIN sys_user_role ur ON u.id = ur.user_id
+        LEFT JOIN sys_role r ON ur.role_id = r.id AND r.deleted = 0
+    </sql>
+
+    <select id="selectPageList" resultMap="userVoMap">
+        SELECT
+        <include refid="userVoColumns"/>
+        <include refid="userJoin"/>
+        <where>
+            u.deleted = 0
+            <if test="dto.username != null and dto.username != ''">
+                AND u.username LIKE CONCAT('%', #{dto.username}, '%')
+            </if>
+            <if test="dto.phone != null and dto.phone != ''">
+                AND u.phone LIKE CONCAT('%', #{dto.phone}, '%')
+            </if>
+            <if test="dto.status != null">
+                AND u.status = #{dto.status}
+            </if>
+        </where>
+        GROUP BY u.id
+        ORDER BY u.id DESC
+    </select>
+
+    <select id="selectByUsername" resultType="com.cms.admin.entity.SysUser">
+        SELECT *
+        FROM sys_user
+        WHERE deleted = 0
+          AND username = #{username}
+        LIMIT 1
+    </select>
+
+    <select id="selectByPhone" resultType="com.cms.admin.entity.SysUser">
+        SELECT *
+        FROM sys_user
+        WHERE deleted = 0
+          AND phone = #{phone}
+        LIMIT 1
+    </select>
+
+    <select id="selectByPhoneExcludeId" resultType="com.cms.admin.entity.SysUser">
+        SELECT *
+        FROM sys_user
+        WHERE deleted = 0
+          AND phone = #{phone}
+          AND id != #{excludeId}
+        LIMIT 1
+    </select>
+
+    <select id="selectUserVoById" resultMap="userVoMap">
+        SELECT
+        <include refid="userVoColumns"/>
+        <include refid="userJoin"/>
+        WHERE u.deleted = 0
+          AND u.id = #{id}
+        GROUP BY u.id
+    </select>
+
+</mapper>

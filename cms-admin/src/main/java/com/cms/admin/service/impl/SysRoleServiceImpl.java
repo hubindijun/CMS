@@ -1,7 +1,5 @@
 package com.cms.admin.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.cms.admin.dto.system.RoleAddDTO;
 import com.cms.admin.dto.system.RoleQueryDTO;
 import com.cms.admin.dto.system.RoleUpdateDTO;
@@ -14,11 +12,12 @@ import com.cms.admin.vo.system.RoleVO;
 import com.cms.common.base.PageResult;
 import com.cms.common.constant.CommonConstant;
 import com.cms.common.exception.BusinessException;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -35,48 +34,29 @@ public class SysRoleServiceImpl implements SysRoleService {
 
     @Override
     public PageResult<RoleVO> page(RoleQueryDTO dto) {
-        Page<SysRole> page = new Page<>(dto.getPageNum(), dto.getPageSize());
-        LambdaQueryWrapper<SysRole> wrapper = new LambdaQueryWrapper<>();
-        if (StringUtils.hasText(dto.getName())) {
-            wrapper.like(SysRole::getName, dto.getName());
-        }
-        if (dto.getStatus() != null) {
-            wrapper.eq(SysRole::getStatus, dto.getStatus());
-        }
-        wrapper.orderByDesc(SysRole::getId);
-        Page<SysRole> result = roleMapper.selectPage(page, wrapper);
-
-        List<RoleVO> voList = result.getRecords().stream().map(role -> {
-            RoleVO vo = new RoleVO();
-            BeanUtils.copyProperties(role, vo);
-            return vo;
-        }).collect(Collectors.toList());
-
-        return PageResult.of(voList, result.getTotal(), dto.getPageNum(), dto.getPageSize());
+        PageHelper.startPage(dto.getPageNum(), dto.getPageSize());
+        List<RoleVO> list = roleMapper.selectPageList(dto);
+        PageInfo<RoleVO> pageInfo = new PageInfo<>(list);
+        return PageResult.of(pageInfo.getList(), pageInfo.getTotal(), dto.getPageNum(), dto.getPageSize());
     }
 
     @Override
     public List<RoleVO> listAll() {
-        return roleMapper.selectList(new LambdaQueryWrapper<SysRole>().eq(SysRole::getStatus, 1))
-                .stream().map(role -> {
-                    RoleVO vo = new RoleVO();
-                    BeanUtils.copyProperties(role, vo);
-                    return vo;
-                }).collect(Collectors.toList());
+        return roleMapper.selectAllEnabled();
     }
 
     @Override
     @Transactional
     public void add(RoleAddDTO dto) {
-        SysRole existing = roleMapper.selectOne(
-                new LambdaQueryWrapper<SysRole>().eq(SysRole::getCode, dto.getCode())
-        );
+        SysRole existing = roleMapper.selectByCode(dto.getCode());
         if (existing != null) {
             throw new BusinessException("角色编码已存在");
         }
         SysRole role = new SysRole();
         BeanUtils.copyProperties(dto, role);
-        if (role.getStatus() == null) role.setStatus(1);
+        if (role.getStatus() == null) {
+            role.setStatus(1);
+        }
         roleMapper.insert(role);
 
         if (dto.getPermissionIds() != null && !dto.getPermissionIds().isEmpty()) {
@@ -96,8 +76,7 @@ public class SysRoleServiceImpl implements SysRoleService {
         roleMapper.updateById(update);
 
         if (dto.getPermissionIds() != null) {
-            rolePermissionMapper.delete(new LambdaQueryWrapper<SysRolePermission>()
-                    .eq(SysRolePermission::getRoleId, dto.getId()));
+            rolePermissionMapper.deleteByRoleId(dto.getId());
             saveRolePermissions(dto.getId(), dto.getPermissionIds());
         }
     }
@@ -106,13 +85,14 @@ public class SysRoleServiceImpl implements SysRoleService {
     @Transactional
     public void delete(Long id) {
         SysRole role = roleMapper.selectById(id);
-        if (role == null) return;
+        if (role == null) {
+            return;
+        }
         if (CommonConstant.ADMIN_ROLE_CODE.equals(role.getCode())) {
             throw new BusinessException("admin角色不可删除");
         }
         roleMapper.deleteById(id);
-        rolePermissionMapper.delete(new LambdaQueryWrapper<SysRolePermission>()
-                .eq(SysRolePermission::getRoleId, id));
+        rolePermissionMapper.deleteByRoleId(id);
     }
 
     @Override
@@ -131,9 +111,8 @@ public class SysRoleServiceImpl implements SysRoleService {
 
     @Override
     public List<Long> getPermissionIds(Long id) {
-        return rolePermissionMapper.selectList(
-                new LambdaQueryWrapper<SysRolePermission>().eq(SysRolePermission::getRoleId, id)
-        ).stream().map(SysRolePermission::getPermissionId).collect(Collectors.toList());
+        return rolePermissionMapper.selectByRoleId(id)
+                .stream().map(SysRolePermission::getPermissionId).collect(Collectors.toList());
     }
 
     @Override
@@ -146,19 +125,16 @@ public class SysRoleServiceImpl implements SysRoleService {
         if (CommonConstant.ADMIN_ROLE_CODE.equals(role.getCode())) {
             throw new BusinessException("admin角色拥有所有权限，无需分配");
         }
-        rolePermissionMapper.delete(new LambdaQueryWrapper<SysRolePermission>()
-                .eq(SysRolePermission::getRoleId, id));
+        rolePermissionMapper.deleteByRoleId(id);
         if (permissionIds != null && !permissionIds.isEmpty()) {
             saveRolePermissions(id, permissionIds);
         }
     }
 
     private void saveRolePermissions(Long roleId, List<Long> permissionIds) {
-        for (Long permId : permissionIds) {
-            SysRolePermission rp = new SysRolePermission();
-            rp.setRoleId(roleId);
-            rp.setPermissionId(permId);
-            rolePermissionMapper.insert(rp);
+        if (permissionIds == null || permissionIds.isEmpty()) {
+            return;
         }
+        rolePermissionMapper.batchInsert(roleId, permissionIds);
     }
 }

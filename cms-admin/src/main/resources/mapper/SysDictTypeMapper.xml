@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cms.admin.mapper.SysDictTypeMapper">
+
+    <resultMap id="dictTypeVoMap" type="com.cms.admin.vo.system.DictTypeVO">
+        <id column="id" property="id"/>
+        <result column="dict_name" property="dictName"/>
+        <result column="dict_type" property="dictType"/>
+        <result column="status" property="status"/>
+        <result column="remark" property="remark"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+
+    <select id="selectPageList" resultMap="dictTypeVoMap">
+        SELECT id, dict_name, dict_type, status, remark, create_time
+        FROM sys_dict_type
+        <where>
+            deleted = 0
+            <if test="dto.dictName != null and dto.dictName != ''">
+                AND dict_name LIKE CONCAT('%', #{dto.dictName}, '%')
+            </if>
+            <if test="dto.dictType != null and dto.dictType != ''">
+                AND dict_type LIKE CONCAT('%', #{dto.dictType}, '%')
+            </if>
+            <if test="dto.status != null">
+                AND status = #{dto.status}
+            </if>
+        </where>
+        ORDER BY id DESC
+    </select>
+
+    <select id="selectAllEnabled" resultMap="dictTypeVoMap">
+        SELECT id, dict_name, dict_type, status, remark, create_time
+        FROM sys_dict_type
+        WHERE deleted = 0
+          AND status = 1
+        ORDER BY dict_name ASC
+    </select>
+
+    <select id="selectByDictType" resultType="com.cms.admin.entity.SysDictType">
+        SELECT *
+        FROM sys_dict_type
+        WHERE deleted = 0
+          AND dict_type = #{dictType}
+        LIMIT 1
+    </select>
+
+    <select id="selectByDictTypeExcludeId" resultType="com.cms.admin.entity.SysDictType">
+        SELECT *
+        FROM sys_dict_type
+        WHERE deleted = 0
+          AND dict_type = #{dictType}
+          AND id != #{excludeId}
+        LIMIT 1
+    </select>
+
+</mapper>

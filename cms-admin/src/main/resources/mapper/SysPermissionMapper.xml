@@ -35,4 +35,18 @@
           AND p.resource_path != ''
     </select>
 
+    <select id="selectAllOrdered" resultType="com.cms.admin.entity.SysPermission">
+        SELECT *
+        FROM sys_permission
+        WHERE deleted = 0
+        ORDER BY sort ASC, id ASC
+    </select>
+
+    <select id="countByParentId" resultType="java.lang.Long">
+        SELECT COUNT(1)
+        FROM sys_permission
+        WHERE deleted = 0
+          AND parent_id = #{parentId}
+    </select>
+
 </mapper>

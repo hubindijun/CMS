@@ -3,9 +3,6 @@ package com.cms.admin.security;
 import com.cms.admin.entity.SysRole;
 import com.cms.admin.entity.SysUser;
 import com.cms.admin.mapper.SysRoleMapper;
-import com.cms.admin.mapper.SysUserRoleMapper;
-import com.cms.admin.entity.SysUserRole;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -30,7 +27,6 @@ import java.util.stream.Collectors;
 public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
     private final TokenService tokenService;
-    private final SysUserRoleMapper userRoleMapper;
     private final SysRoleMapper roleMapper;
 
     @Override
@@ -57,21 +53,13 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private List<SimpleGrantedAuthority> getUserAuthorities(Long userId) {
-        List<Long> roleIds = userRoleMapper.selectList(
-                new LambdaQueryWrapper<SysUserRole>().eq(SysUserRole::getUserId, userId)
-        ).stream().map(SysUserRole::getRoleId).collect(Collectors.toList());
-
-        if (roleIds.isEmpty()) {
+        List<SysRole> roles = roleMapper.selectByUserId(userId);
+        if (roles.isEmpty()) {
             return new ArrayList<>();
         }
-
-        List<SysRole> roles = roleMapper.selectBatchIds(roleIds);
-        List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-        for (SysRole role : roles) {
-            if (role.getStatus() != null && role.getStatus() == 1) {
-                authorities.add(new SimpleGrantedAuthority("ROLE_" + role.getCode()));
-            }
-        }
-        return authorities;
+        return roles.stream()
+                .filter(role -> role.getStatus() != null && role.getStatus() == 1)
+                .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getCode()))
+                .collect(Collectors.toList());
     }
 }

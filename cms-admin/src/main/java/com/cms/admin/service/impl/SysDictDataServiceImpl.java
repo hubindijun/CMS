@@ -1,7 +1,5 @@
 package com.cms.admin.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.cms.admin.dto.system.DictDataQueryDTO;
 import com.cms.admin.entity.SysDictData;
 import com.cms.admin.mapper.SysDictDataMapper;
@@ -9,13 +7,13 @@ import com.cms.admin.service.SysDictDataService;
 import com.cms.admin.vo.system.DictDataVO;
 import com.cms.common.base.PageResult;
 import com.cms.common.exception.BusinessException;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * 字典数据服务实现
@@ -28,13 +26,10 @@ public class SysDictDataServiceImpl implements SysDictDataService {
 
     @Override
     public PageResult<DictDataVO> page(DictDataQueryDTO dto) {
-        Page<SysDictData> page = new Page<>(dto.getPageNum(), dto.getPageSize());
-        LambdaQueryWrapper<SysDictData> wrapper = buildQueryWrapper(dto);
-        wrapper.orderByAsc(SysDictData::getDictSort).orderByDesc(SysDictData::getId);
-        Page<SysDictData> result = dictDataMapper.selectPage(page, wrapper);
-
-        List<DictDataVO> voList = result.getRecords().stream().map(this::toVO).collect(Collectors.toList());
-        return PageResult.of(voList, result.getTotal(), dto.getPageNum(), dto.getPageSize());
+        PageHelper.startPage(dto.getPageNum(), dto.getPageSize());
+        List<DictDataVO> list = dictDataMapper.selectPageList(dto);
+        PageInfo<DictDataVO> pageInfo = new PageInfo<>(list);
+        return PageResult.of(pageInfo.getList(), pageInfo.getTotal(), dto.getPageNum(), dto.getPageSize());
     }
 
     @Override
@@ -48,19 +43,17 @@ public class SysDictDataServiceImpl implements SysDictDataService {
 
     @Override
     public List<DictDataVO> listByType(String dictType) {
-        List<SysDictData> list = dictDataMapper.selectList(
-                new LambdaQueryWrapper<SysDictData>()
-                        .eq(SysDictData::getDictType, dictType)
-                        .eq(SysDictData::getStatus, 1)
-                        .orderByAsc(SysDictData::getDictSort)
-        );
-        return list.stream().map(this::toVO).collect(Collectors.toList());
+        return dictDataMapper.selectByDictType(dictType);
     }
 
     @Override
     public void add(SysDictData dictData) {
-        if (dictData.getDictSort() == null) dictData.setDictSort(0);
-        if (dictData.getStatus() == null) dictData.setStatus(1);
+        if (dictData.getDictSort() == null) {
+            dictData.setDictSort(0);
+        }
+        if (dictData.getStatus() == null) {
+            dictData.setStatus(1);
+        }
         dictDataMapper.insert(dictData);
     }
 
@@ -76,20 +69,6 @@ public class SysDictDataServiceImpl implements SysDictDataService {
     @Override
     public void delete(Long id) {
         dictDataMapper.deleteById(id);
-    }
-
-    private LambdaQueryWrapper<SysDictData> buildQueryWrapper(DictDataQueryDTO dto) {
-        LambdaQueryWrapper<SysDictData> wrapper = new LambdaQueryWrapper<>();
-        if (StringUtils.hasText(dto.getDictType())) {
-            wrapper.eq(SysDictData::getDictType, dto.getDictType());
-        }
-        if (StringUtils.hasText(dto.getDictLabel())) {
-            wrapper.like(SysDictData::getDictLabel, dto.getDictLabel());
-        }
-        if (dto.getStatus() != null) {
-            wrapper.eq(SysDictData::getStatus, dto.getStatus());
-        }
-        return wrapper;
     }
 
     private DictDataVO toVO(SysDictData entity) {

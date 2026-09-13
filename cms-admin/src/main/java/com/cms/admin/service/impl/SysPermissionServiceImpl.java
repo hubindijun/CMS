@@ -1,10 +1,11 @@
 package com.cms.admin.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.cms.admin.dto.system.PermissionAddDTO;
 import com.cms.admin.dto.system.PermissionUpdateDTO;
 import com.cms.admin.entity.SysPermission;
+import com.cms.admin.entity.SysUser;
 import com.cms.admin.mapper.SysPermissionMapper;
+import com.cms.admin.mapper.SysUserMapper;
 import com.cms.admin.service.SysPermissionService;
 import com.cms.admin.vo.system.PermissionVO;
 import com.cms.common.exception.BusinessException;
@@ -27,21 +28,26 @@ import java.util.stream.Collectors;
 public class SysPermissionServiceImpl implements SysPermissionService {
 
     private final SysPermissionMapper permissionMapper;
+    private final SysUserMapper userMapper;
 
     @Override
     public List<PermissionVO> tree() {
-        List<SysPermission> all = permissionMapper.selectList(
-                new LambdaQueryWrapper<SysPermission>().orderByAsc(SysPermission::getSort)
-        );
+        List<SysPermission> all = permissionMapper.selectAllOrdered();
         return buildTree(all, 0L);
     }
 
     @Override
+    public List<PermissionVO> menuTreeByUsername(String username) {
+        SysUser user = userMapper.selectByUsername(username);
+        if (user == null) {
+            throw new BusinessException("用户不存在");
+        }
+        return menuTreeByUserId(user.getId());
+    }
+
+    @Override
     public List<PermissionVO> menuTreeByUserId(Long userId) {
-        // 1. 查询全部权限（用于补全父级节点，数量有限，内存中处理性能没问题）
-        List<SysPermission> allPerms = permissionMapper.selectList(
-                new LambdaQueryWrapper<SysPermission>().orderByAsc(SysPermission::getSort)
-        );
+        List<SysPermission> allPerms = permissionMapper.selectAllOrdered();
         Map<Long, SysPermission> allPermMap = allPerms.stream()
                 .collect(Collectors.toMap(SysPermission::getId, p -> p));
 
@@ -114,10 +120,8 @@ public class SysPermissionServiceImpl implements SysPermissionService {
     @Override
     @Transactional
     public void delete(Long id) {
-        Long count = permissionMapper.selectCount(
-                new LambdaQueryWrapper<SysPermission>().eq(SysPermission::getParentId, id)
-        );
-        if (count > 0) {
+        Long count = permissionMapper.countByParentId(id);
+        if (count != null && count > 0) {
             throw new BusinessException("存在子级权限，不可删除");
         }
         permissionMapper.deleteById(id);

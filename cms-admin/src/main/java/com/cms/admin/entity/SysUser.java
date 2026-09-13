@@ -2,6 +2,7 @@ package com.cms.admin.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.cms.common.base.BaseEntity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -13,6 +14,8 @@ import lombok.EqualsAndHashCode;
  */
 public class SysUser extends BaseEntity {
     private String username;
+
+    @JsonIgnore
     private String password;
     private String nickname;
     private String email;

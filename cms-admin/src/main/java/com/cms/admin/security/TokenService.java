@@ -3,14 +3,11 @@ package com.cms.admin.security;
 import com.cms.admin.entity.SysUser;
 import com.cms.admin.mapper.SysUserMapper;
 import com.cms.common.constant.CommonConstant;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -35,13 +32,8 @@ public class TokenService {
         String token = UUID.randomUUID().toString().replace("-", "");
         String key = CommonConstant.TOKEN_CACHE_PREFIX + token;
 
-        Map<String, Object> userInfo = new HashMap<>();
-        userInfo.put("id", user.getId());
-        userInfo.put("username", user.getUsername());
-        userInfo.put("nickname", user.getNickname());
-
         try {
-            redisTemplate.opsForValue().set(key, objectMapper.writeValueAsString(userInfo),
+            redisTemplate.opsForValue().set(key, objectMapper.writeValueAsString(user),
                     CommonConstant.TOKEN_EXPIRE, TimeUnit.SECONDS);
         } catch (Exception e) {
             throw new RuntimeException("Token 存储失败", e);
@@ -68,12 +60,7 @@ public class TokenService {
         redisTemplate.expire(key, CommonConstant.TOKEN_EXPIRE, TimeUnit.SECONDS);
 
         try {
-            Map<String, Object> map = objectMapper.readValue(json, Map.class);
-            SysUser user = new SysUser();
-            user.setId(((Number) map.get("id")).longValue());
-            user.setUsername((String) map.get("username"));
-            user.setNickname((String) map.get("nickname"));
-            return user;
+            return objectMapper.readValue(json, SysUser.class);
         } catch (Exception e) {
             return null;
         }
@@ -110,8 +97,6 @@ public class TokenService {
      * @return 用户对象
      */
     public SysUser getByUsername(String username) {
-        return userMapper.selectOne(
-                new LambdaQueryWrapper<SysUser>().eq(SysUser::getUsername, username)
-        );
+        return userMapper.selectByUsername(username);
     }
 }
