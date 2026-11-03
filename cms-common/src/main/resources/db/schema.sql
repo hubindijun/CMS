@@ -8,10 +8,8 @@ CREATE TABLE IF NOT EXISTS sys_user (
     phone VARCHAR(32) COMMENT '手机号',
     avatar VARCHAR(255) COMMENT '头像',
     status TINYINT DEFAULT 1 COMMENT '状态 0禁用 1启用',
-    create_time DATETIME,
-    update_time DATETIME,
-    create_by VARCHAR(64),
-    update_by VARCHAR(64),
+    create_time DATETIME DEFAULT CURRENT_TIMESTAMP,
+    update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     deleted TINYINT DEFAULT 0,
     UNIQUE KEY uk_username (username),
     UNIQUE KEY uk_phone (phone)
@@ -24,10 +22,8 @@ CREATE TABLE IF NOT EXISTS sys_role (
     code VARCHAR(64) NOT NULL COMMENT '角色编码',
     description VARCHAR(255) COMMENT '描述',
     status TINYINT DEFAULT 1 COMMENT '状态 0禁用 1启用',
-    create_time DATETIME,
-    update_time DATETIME,
-    create_by VARCHAR(64),
-    update_by VARCHAR(64),
+    create_time DATETIME DEFAULT CURRENT_TIMESTAMP,
+    update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     deleted TINYINT DEFAULT 0,
     UNIQUE KEY uk_code (code)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='角色表';
@@ -44,10 +40,8 @@ CREATE TABLE IF NOT EXISTS sys_permission (
     icon VARCHAR(64) COMMENT '图标',
     sort INT DEFAULT 0 COMMENT '排序',
     status TINYINT DEFAULT 1 COMMENT '状态 0禁用 1启用',
-    create_time DATETIME,
-    update_time DATETIME,
-    create_by VARCHAR(64),
-    update_by VARCHAR(64),
+    create_time DATETIME DEFAULT CURRENT_TIMESTAMP,
+    update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     deleted TINYINT DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='权限表';
 
@@ -78,10 +72,8 @@ CREATE TABLE IF NOT EXISTS sys_login_log (
     status TINYINT DEFAULT 1 COMMENT '状态 0失败 1成功',
     message VARCHAR(255) COMMENT '提示消息',
     login_time DATETIME COMMENT '登录时间',
-    create_time DATETIME,
-    update_time DATETIME,
-    create_by VARCHAR(64),
-    update_by VARCHAR(64),
+    create_time DATETIME DEFAULT CURRENT_TIMESTAMP,
+    update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     deleted TINYINT DEFAULT 0,
     KEY idx_username (username),
     KEY idx_login_time (login_time)
@@ -94,10 +86,8 @@ CREATE TABLE IF NOT EXISTS sys_dict_type (
     dict_type VARCHAR(100) COMMENT '字典类型',
     status TINYINT DEFAULT 1 COMMENT '状态 0禁用 1启用',
     remark VARCHAR(500) COMMENT '备注',
-    create_time DATETIME,
-    update_time DATETIME,
-    create_by VARCHAR(64),
-    update_by VARCHAR(64),
+    create_time DATETIME DEFAULT CURRENT_TIMESTAMP,
+    update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     deleted TINYINT DEFAULT 0,
     UNIQUE KEY uk_dict_type (dict_type)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='字典类型表';
@@ -113,10 +103,8 @@ CREATE TABLE IF NOT EXISTS sys_dict_data (
     list_class VARCHAR(100) COMMENT '表格回显样式',
     status TINYINT DEFAULT 1 COMMENT '状态 0禁用 1启用',
     remark VARCHAR(500) COMMENT '备注',
-    create_time DATETIME,
-    update_time DATETIME,
-    create_by VARCHAR(64),
-    update_by VARCHAR(64),
+    create_time DATETIME DEFAULT CURRENT_TIMESTAMP,
+    update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     deleted TINYINT DEFAULT 0,
     KEY idx_dict_type (dict_type)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='字典数据表';

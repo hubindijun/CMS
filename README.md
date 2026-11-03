@@ -14,7 +14,7 @@
 - **Redis 6.x** — Token 存储 + 权限缓存 + 验证码
 - **Redisson** — 分布式锁
 - **Kafka** — 消息队列
-- **Knife4j / Swagger UI** — API 文档
+- **Swagger UI / springdoc** — API 文档
 - **Hutool** — 工具类库
 
 ### 前端
@@ -89,7 +89,7 @@ cd cms-admin
 mvn spring-boot:run
 ```
 
-API 文档地址：http://localhost:8080/doc.html
+API 文档地址：http://localhost:8080/swagger-ui.html
 
 ### 前端启动
 
@@ -237,7 +237,8 @@ npm run dev
 - ORM：MyBatis-Plus + XML，SQL 统一写在 XML Mapper 中，Service 层不出现 QueryWrapper
 - 分页：PageHelper，`PageHelper.startPage()` + 普通查询方法
 - 逻辑删除：deleted 字段，MyBatis-Plus 自动处理
-- 基础实体：`BaseEntity` 包含 id、createTime、updateTime、createBy、updateBy、deleted
+- 基础实体：`BaseEntity` 包含 id、createTime、updateTime、deleted
+- 时间字段：数据库 DEFAULT CURRENT_TIMESTAMP / ON UPDATE，不由代码填充
 - 后端鉴权：`@PreAuthorize("hasRole('角色编码')")`，角色驱动
 - 认证方式：Bearer Token + Redis，无状态分布式认证
 - 工具类：RedisService / RedissonLockService / KafkaService（Spring Bean 注入）+ RsaUtils / AesUtils（静态工具）

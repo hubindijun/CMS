@@ -8,7 +8,7 @@ CMS 通用后台管理脚手架，基于 Spring Boot 3.x + Vue 3 的电商后台
 
 ## 技术栈
 
-**后端:** Java 17 + Spring Boot 3.3 + Spring Security + Token Redis（无状态） + MyBatis-Plus 3.5 + PageHelper + MySQL 8 + Redis 6 + Redisson + Kafka + Knife4j + Hutool
+**后端:** Java 17 + Spring Boot 3.3 + Spring Security + Token Redis（无状态） + MyBatis-Plus 3.5 + PageHelper + MySQL 8 + Redis 6 + Redisson + Kafka + Swagger UI (springdoc) + Hutool
 
 **前端:** Vue 3 + Vite 5 + Arco Design Vue（按需引入）+ TailwindCSS 3 + Pinia + Vue Router 4 + Axios
 
@@ -30,7 +30,7 @@ cms/
 - **controller** → REST 接口层，统一返回 `Result<T>`
 - **service** / **service/impl** → 业务逻辑层
 - **mapper** → MyBatis-Plus Mapper 接口
-- **entity** → 数据库实体，继承 `BaseEntity`（含 id, createTime, updateTime, createBy, updateBy, deleted）
+- **entity** → 数据库实体，继承 `BaseEntity`（含 id, createTime, updateTime, deleted）
 - **dto** → 入参传输对象（QueryDTO 用于分页查询，AddDTO/UpdateDTO 用于新增/修改）
 - **vo** → 出参视图对象
 
@@ -39,7 +39,8 @@ cms/
 - 统一分页：`PageResult<T>` { list, total, pageNum, pageSize }，使用 PageHelper 分页
 - 分页查询 DTO 继承 `PageQuery`（含 pageNum, pageSize）
 - ORM 风格：MyBatis-Plus + XML，SQL 统一写在 XML Mapper，Service 层不出现 QueryWrapper
-- 保留 MyBatis-Plus BaseMapper 主键 CRUD、逻辑删除、自动填充
+- 保留 MyBatis-Plus BaseMapper 主键 CRUD、逻辑删除
+- 时间字段由数据库默认值处理（DEFAULT CURRENT_TIMESTAMP / ON UPDATE），不由代码填充
 - 逻辑删除：`deleted` 字段，MyBatis-Plus 自动处理（已删=1，未删=0）
 - 主键自增：`IdType.AUTO`
 ### 权限体系（RBAC）
@@ -58,7 +59,7 @@ mvn clean package -DskipTests
 # 后端运行（开发模式）
 cd cms-admin && mvn spring-boot:run
 
-# API 文档：http://localhost:8080/doc.html
+# API 文档：http://localhost:8080/swagger-ui.html
 
 # 数据库初始化
 mysql -u root -p cms < cms-common/src/main/resources/db/schema.sql
