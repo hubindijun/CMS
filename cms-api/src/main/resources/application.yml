@@ -1,41 +1,59 @@
+# ===============================
+# 服务配置
+# ===============================
 server:
-  port: 8081
+  port: 8081                    # 服务端口（与cms-admin区分）
   servlet:
-    context-path: /
+    context-path: /             # 应用上下文路径
 
+# ===============================
+# Spring 基础配置
+# ===============================
 spring:
   profiles:
-    active: dev
+    active: dev                 # 激活的环境配置（dev/test/prod）
   application:
-    name: cms-api
+    name: cms-api               # 应用名称
 
+# ===============================
+# MyBatis-Plus 配置
+# ===============================
 mybatis-plus:
-  mapper-locations: classpath*:mapper/**/*.xml
-  type-aliases-package: com.cms.api.entity
+  mapper-locations: classpath*:mapper/**/*.xml    # Mapper XML 文件路径
+  type-aliases-package: com.cms.api.entity        # 实体类别名包
   configuration:
-    map-underscore-to-camel-case: true
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    map-underscore-to-camel-case: true            # 下划线转驼峰命名
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl  # SQL日志输出到控制台（开发环境）
   global-config:
     db-config:
-      id-type: auto
-      logic-delete-field: deleted
-      logic-delete-value: 1
-      logic-not-delete-value: 0
+      id-type: auto              # 主键自增策略
+      logic-delete-field: deleted                # 逻辑删除字段名
+      logic-delete-value: 1     # 逻辑删除值（已删除）
+      logic-not-delete-value: 0                  # 逻辑未删除值（未删除）
 
+# ===============================
+# PageHelper 分页插件配置
+# ===============================
 pagehelper:
-  helper-dialect: mysql
-  reasonable: true
-  support-methods-arguments: true
-  params: count=countSql
+  helper-dialect: mysql          # 数据库方言
+  reasonable: true               # 合理化分页（pageNum<=0时查第一页，pageNum>总页数时查最后一页）
+  support-methods-arguments: true                 # 支持通过Mapper接口参数传递分页参数
+  params: count=countSql        # count查询SQL配置
 
+# ===============================
+# springdoc Swagger UI 配置
+# ===============================
 springdoc:
   api-docs:
-    path: /v3/api-docs
+    path: /v3/api-docs           # OpenAPI JSON 文档路径
   swagger-ui:
-    path: /swagger-ui.html
-    tags-sorter: alpha
-  packages-to-scan: com.cms.api.controller
+    path: /swagger-ui.html       # Swagger UI 访问地址
+    tags-sorter: alpha           # 接口标签按字母排序
+  packages-to-scan: com.cms.api.controller       # 扫描的Controller包路径
 
+# ===============================
+# 自定义配置
+# ===============================
 cms:
   api:
-    api-key: cms-api-key-2026
+    api-key: cms-api-key-2026    # 对外接口API Key（请求头X-API-Key），生产环境请修改

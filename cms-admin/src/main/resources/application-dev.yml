@@ -1,24 +1,32 @@
+# ===============================
+# 开发环境配置
+# ===============================
 spring:
+  # 数据源配置
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/cms?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
     username: root
     password: "123456"
+
+  # Redis 配置
   data:
     redis:
       host: localhost
       port: 6379
       password: "123456"
-      database: 0
+      database: 0                # 数据库索引（0-15）
+
+  # Kafka 配置
   kafka:
     bootstrap-servers: localhost:9092
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
     consumer:
-      group-id: cms-admin-group
+      group-id: cms-admin-group  # 消费者组ID
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      auto-offset-reset: latest
+      auto-offset-reset: latest  # 无消费记录时从最新开始消费
     listener:
-      ack-mode: manual_immediate
+      ack-mode: manual_immediate # 手动确认模式（立即提交offset）

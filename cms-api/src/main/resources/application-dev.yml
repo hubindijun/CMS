@@ -1,10 +1,17 @@
+# ===============================
+# 开发环境配置
+# ===============================
 spring:
+  # 数据源配置（与cms-admin共用同一数据库）
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/cms?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
     username: root
     password: "123456"
 
+# ===============================
+# 自定义配置
+# ===============================
 cms:
   api:
-    api-key: cms-api-dev-key
+    api-key: cms-api-dev-key     # 开发环境API Key，生产环境请使用强随机密钥
