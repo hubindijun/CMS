@@ -1,0 +1,111 @@
+services:
+  # Kafka Broker 0
+  kafka-0:
+    image: apache/kafka:3.7.1
+    container_name: kafka-0
+    hostname: kafka-0
+    ports:
+      - "19092:19092"
+    environment:
+      # KRaft 模式
+      CLUSTER_ID: cms-kafka-cluster-001
+      KAFKA_NODE_ID: 0
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 0@kafka-0:9091,1@kafka-1:9091,2@kafka-2:9091
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      # 监听器
+      KAFKA_LISTENERS: PLAINTEXT://kafka-0:9092,CONTROLLER://kafka-0:9091,EXTERNAL://0.0.0.0:19092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-0:9092,EXTERNAL://localhost:19092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,EXTERNAL:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      # 副本与日志
+      KAFKA_DEFAULT_REPLICATION_FACTOR: 3
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 3
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 2
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      KAFKA_NUM_PARTITIONS: 3
+    volumes:
+      - kafka-0-data:/var/lib/kafka/data
+    networks:
+      - kafka-net
+
+  # Kafka Broker 1
+  kafka-1:
+    image: apache/kafka:3.7.1
+    container_name: kafka-1
+    hostname: kafka-1
+    ports:
+      - "19093:19093"
+    environment:
+      CLUSTER_ID: cms-kafka-cluster-001
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 0@kafka-0:9091,1@kafka-1:9091,2@kafka-2:9091
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_LISTENERS: PLAINTEXT://kafka-1:9092,CONTROLLER://kafka-1:9091,EXTERNAL://0.0.0.0:19093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-1:9092,EXTERNAL://localhost:19093
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,EXTERNAL:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_DEFAULT_REPLICATION_FACTOR: 3
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 3
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 2
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      KAFKA_NUM_PARTITIONS: 3
+    volumes:
+      - kafka-1-data:/var/lib/kafka/data
+    networks:
+      - kafka-net
+
+  # Kafka Broker 2
+  kafka-2:
+    image: apache/kafka:3.7.1
+    container_name: kafka-2
+    hostname: kafka-2
+    ports:
+      - "19094:19094"
+    environment:
+      CLUSTER_ID: cms-kafka-cluster-001
+      KAFKA_NODE_ID: 2
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 0@kafka-0:9091,1@kafka-1:9091,2@kafka-2:9091
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_LISTENERS: PLAINTEXT://kafka-2:9092,CONTROLLER://kafka-2:9091,EXTERNAL://0.0.0.0:19094
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-2:9092,EXTERNAL://localhost:19094
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,EXTERNAL:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_DEFAULT_REPLICATION_FACTOR: 3
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 3
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 2
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      KAFKA_NUM_PARTITIONS: 3
+    volumes:
+      - kafka-2-data:/var/lib/kafka/data
+    networks:
+      - kafka-net
+
+  # Redpanda Console（Kafka 可视化管理界面）
+  kafka-ui:
+    image: redpandadata/console:latest
+    container_name: kafka-ui
+    ports:
+      - "8091:8080"
+    environment:
+      KAFKA_BROKERS: kafka-0:9092,kafka-1:9092,kafka-2:9092
+    depends_on:
+      - kafka-0
+      - kafka-1
+      - kafka-2
+    networks:
+      - kafka-net
+
+volumes:
+  kafka-0-data:
+  kafka-1-data:
+  kafka-2-data:
+
+networks:
+  kafka-net:
+    driver: bridge

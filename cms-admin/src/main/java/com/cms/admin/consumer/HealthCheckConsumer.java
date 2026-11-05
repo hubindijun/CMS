@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 public class HealthCheckConsumer extends BaseKafkaConsumer {
 
     @Override
-    protected String getTopic() {
+    public String getTopic() {
         return "system.health.check";
     }
 

@@ -1,0 +1,43 @@
+services:
+  # XXL-Job 专用 MySQL
+  mysql:
+    image: mysql:8.0
+    container_name: xxl-job-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: "123456"
+      MYSQL_DATABASE: xxl_job
+      TZ: Asia/Shanghai
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    command:
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_general_ci
+      --default-authentication-plugin=mysql_native_password
+    networks:
+      - xxl-job-net
+
+  # XXL-Job Admin（调度中心）
+  xxl-job-admin:
+    image: xuxueli/xxl-job-admin:2.4.1
+    container_name: xxl-job-admin
+    ports:
+      - "8092:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/xxl_job?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: "123456"
+      XXL_JOB_ACCESS_TOKEN: ""
+    depends_on:
+      - mysql
+    networks:
+      - xxl-job-net
+    restart: unless-stopped
+
+volumes:
+  mysql-data:
+
+networks:
+  xxl-job-net:
+    driver: bridge

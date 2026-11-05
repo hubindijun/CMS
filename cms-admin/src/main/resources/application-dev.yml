@@ -20,7 +20,7 @@ spring:
   # Kafka 配置
   kafka:
     # Kafka 集群地址，多节点用逗号分隔，如：host1:9092,host2:9092,host3:9092
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: localhost:19092,localhost:19093,localhost:19094
 
     # ===== 生产者配置 =====
     producer:
@@ -82,7 +82,7 @@ xxl:
   job:
     admin:
       # 调度中心地址，多节点用逗号分隔
-      addresses: http://localhost:8080/xxl-job-admin
+      addresses: http://localhost:8092/xxl-job-admin
     executor:
       # 执行器名称，调度中心通过此名称识别执行器
       appname: cms-admin-executor

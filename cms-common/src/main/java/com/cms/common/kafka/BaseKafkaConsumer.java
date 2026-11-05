@@ -14,7 +14,7 @@ import org.springframework.kafka.support.Acknowledgment;
  * public class OrderConsumer extends BaseKafkaConsumer {
  *
  *     &#64;Override
- *     protected String getTopic() {
+ *     public String getTopic() {
  *         return "order.created";
  *     }
  *
@@ -39,11 +39,11 @@ import org.springframework.kafka.support.Acknowledgment;
 public abstract class BaseKafkaConsumer {
 
     /**
-     * 订阅的 topic
+     * 订阅的 topic（SpEL 表达式 #{__listener.getTopic()} 调用，必须为 public）
      *
      * @return topic 名称
      */
-    protected abstract String getTopic();
+    public abstract String getTopic();
 
     /**
      * 业务消费逻辑
