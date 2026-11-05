@@ -8,7 +8,7 @@ CMS 通用后台管理脚手架，基于 Spring Boot 3.x + Vue 3 的电商后台
 
 ## 技术栈
 
-**后端:** Java 17 + Spring Boot 3.3 + Spring Security + Token Redis（无状态） + MyBatis-Plus 3.5 + PageHelper + MySQL 8 + Redis 6 + Redisson + Kafka + Swagger UI (springdoc) + Hutool
+**后端:** Java 17 + Spring Boot 3.3 + Spring Security + Token Redis（无状态） + MyBatis-Plus 3.5 + PageHelper + MySQL 8 + Redis 6 + Redisson + Kafka + XXL-Job + Swagger UI (springdoc) + Hutool
 
 **前端:** Vue 3 + Vite 5 + Arco Design Vue（按需引入）+ TailwindCSS 3 + Pinia + Vue Router 4 + Axios
 
@@ -43,6 +43,20 @@ cms/
 - 时间字段由数据库默认值处理（DEFAULT CURRENT_TIMESTAMP / ON UPDATE），不由代码填充
 - 逻辑删除：`deleted` 字段，MyBatis-Plus 自动处理（已删=1，未删=0）
 - 主键自增：`IdType.AUTO`
+
+### 消息队列（Kafka）
+- 生产者：`KafkaProducerService`（`com.cms.common.kafka`），同步/异步发送，自动 JSON 序列化，统一日志埋点
+- 消费者：`BaseKafkaConsumer` 抽象基类，模板方法模式，统一异常捕获/ACK/日志，业务方实现 `getTopic()` + `handle(String message)`
+- 消息格式：JSON 字符串，业务方自行解析（跨系统场景不共享实体类）
+- 手动 ACK，消费失败也 ACK（避免阻塞），失败后调用 `handleException` 钩子（可重写实现死信/告警）
+- Topic 命名：`{业务域}.{事件名}`，如 `order.created`、`system.health.check`
+
+### 定时任务（XXL-Job）
+- 执行器配置：`XxlJobConfig`，配置项前缀 `xxl.job.*`
+- Handler 开发：`@Component` + `@XxlJob("handlerName")` 注解方法
+- Handler 放在各模块的 `job` 包下
+- 调度中心地址、执行器名称、端口等通过配置文件注入
+
 ### 权限体系（RBAC）
 - 用户 → 角色 → 权限（多对多两级关联），多角色取并集
 - 权限类型：1目录 / 2菜单 / 3资源（resource_path，Ant 风格）
@@ -112,8 +126,12 @@ npm run preview   # 预览构建产物
 
 ## 开发阶段
 
-当前处于第一阶段完成阶段，已实现 RBAC 权限体系（用户/角色/权限/登录认证/个人中心/登录日志/字典管理）。
+当前处于第一阶段完成 + 基础组件集成完成阶段。
 
-待开发阶段：
+**已完成：**
+- **第一阶段**：RBAC 权限体系（用户/角色/权限/登录认证/个人中心/登录日志/字典管理）
+- **基础组件**：Kafka 消息队列封装（生产者服务 + 消费者基类）、XXL-Job 分布式定时任务（含健康检查示例）
+
+**待开发阶段：**
 - **第二阶段**：电商业务模块（商品管理、订单管理、会员管理）
 - **第三阶段**：通用能力 + 对外接口（文件管理、系统配置、cms-api、MCP、代码生成器）

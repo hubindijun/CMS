@@ -13,7 +13,8 @@
 - **MySQL 8.0** — 主数据库
 - **Redis 6.x** — Token 存储 + 权限缓存 + 验证码
 - **Redisson** — 分布式锁
-- **Kafka** — 消息队列
+- **Kafka** — 消息队列（生产者 + 消费者基类封装，统一日志）
+- **XXL-Job** — 分布式定时任务
 - **Swagger UI / springdoc** — API 文档
 - **Hutool** — 工具类库
 
@@ -173,6 +174,15 @@ npm run dev
   - [ ] 余额流水 — 充值、消费、退款记录
   - [ ] 积分流水 — 获取、消费、过期记录
 
+### ✅ 第二阶段：基础组件（已完成）
+- [x] Kafka 消息队列封装
+  - [x] KafkaProducerService — 生产者（同步/异步发送，自动 JSON 序列化，统一日志）
+  - [x] BaseKafkaConsumer — 消费者基类（模板方法模式，统一异常/ACK/日志）
+  - [x] 健康检查示例 — XXL-Job 定时发送 + 消费者验证链路
+- [x] XXL-Job 分布式定时任务
+  - [x] XxlJobConfig — 执行器配置
+  - [x] KafkaHealthCheckJob — 健康检查定时任务示例
+
 ### 📋 第三阶段：通用能力（待开发）
 - [ ] 文件管理
   - [ ] 文件上传 — 图片/文档/视频
@@ -241,7 +251,9 @@ npm run dev
 - 时间字段：数据库 DEFAULT CURRENT_TIMESTAMP / ON UPDATE，不由代码填充
 - 后端鉴权：`@PreAuthorize("hasRole('角色编码')")`，角色驱动
 - 认证方式：Bearer Token + Redis，无状态分布式认证
-- 工具类：RedisService / RedissonLockService / KafkaService（Spring Bean 注入）+ RsaUtils / AesUtils（静态工具）
+- 工具类：RedisService / RedissonLockService / KafkaProducerService（Spring Bean 注入）+ RsaUtils / AesUtils（静态工具）
+- 消息队列：KafkaProducerService（生产者）+ BaseKafkaConsumer（消费者基类），统一日志埋点
+- 定时任务：XXL-Job 分布式调度，`@XxlJob` 注解开发 Handler
 
 ### 前端
 - 页面组件放在 `views/`，按业务模块分目录

@@ -19,14 +19,80 @@ spring:
 
   # Kafka 配置
   kafka:
+    # Kafka 集群地址，多节点用逗号分隔，如：host1:9092,host2:9092,host3:9092
     bootstrap-servers: localhost:9092
+
+    # ===== 生产者配置 =====
     producer:
+      # 发送确认模式：
+      #   0 - 不等待确认，性能最高，可能丢消息
+      #   1 - leader 写入后确认（默认）
+      #   all - ISR 全部写入后确认，最可靠，性能最低
+      acks: all
+      # 发送失败重试次数（幂等生产者模式下建议 ≥ 0）
+      retries: 3
+      # 批量大小（字节），同一分区的消息凑满这个大小后一起发送
+      batch-size: 16384
+      # 攒批等待时间（毫秒），消息到来后等待最多 linger.ms 再发送，配合 batch-size 凑批
+      linger-ms: 10
+      # 生产者缓冲区总大小（字节），异步发送时消息先存到这里
+      buffer-memory: 33554432
+      # key 序列化器
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      # value 序列化器（统一用 String，对象由业务层 JSON 序列化后传入）
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      properties:
+        # 开启幂等生产者：确保同一条消息不会重复写入 broker
+        # 配合 acks=all + retries > 0 使用，实现 exactly-once 语义（生产者侧）
+        enable.idempotence: true
+
+    # ===== 消费者配置 =====
     consumer:
-      group-id: cms-admin-group  # 消费者组ID
+      # 消费组 ID，同一组内的消费者共同消费，不同组独立消费
+      group-id: cms-admin-group
+      # 无提交 offset 时的起始消费位置：
+      #   earliest - 从最早的消息开始消费
+      #   latest   - 从最新的消息开始消费（默认）
+      #   none     - 没有 offset 时直接抛异常
+      auto-offset-reset: latest
+      # 单次 poll 最大拉取条数
+      max-poll-records: 100
+      # 关闭自动提交 offset，使用手动 ACK
+      enable-auto-commit: false
+      # key 反序列化器
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      # value 反序列化器
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      auto-offset-reset: latest  # 无消费记录时从最新开始消费
+
+    # ===== 监听器配置 =====
     listener:
-      ack-mode: manual_immediate # 手动确认模式（立即提交offset）
+      # 手动确认模式：
+      #   manual           - 调用 acknowledge() 后，在下一次 poll 前批量提交
+      #   manual_immediate - 调用 acknowledge() 后立即提交（配合手动 ACK 使用）
+      #   record           - 每条记录处理完自动提交
+      #   batch            - 每批记录处理完自动提交（默认）
+      ack-mode: manual_immediate
+      # 消费者线程数，建议 ≤ topic 分区数（多于分区数的线程空闲）
+      concurrency: 3
+      # poll 超时时间（毫秒）
+      poll-timeout: 3000
+
+# XXL-Job 分布式任务调度
+xxl:
+  job:
+    admin:
+      # 调度中心地址，多节点用逗号分隔
+      addresses: http://localhost:8080/xxl-job-admin
+    executor:
+      # 执行器名称，调度中心通过此名称识别执行器
+      appname: cms-admin-executor
+      # 执行器地址，为空则自动注册（一般留空即可）
+      address: ""
+      # 执行器 IP，为空则自动获取（一般留空即可）
+      ip: ""
+      # 执行器端口，同一机器上多个执行器需区分端口
+      port: 9999
+      # 执行器日志保存路径
+      logpath: ./logs/xxl-job
+      # 日志保留天数，-1 表示永久保留
+      logretentiondays: 30
