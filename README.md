@@ -33,6 +33,8 @@ cms/
 ├── cms-admin/                # 后台管理模块（可执行 JAR）
 ├── cms-api/                  # 对外接口模块（预留，RESTful + MCP）
 ├── cms-admin-web/            # 前端管理后台（Vue3 + Vite）
+├── kafka-poc/                # Kafka 3节点集群 docker-compose（含管理界面）
+├── xxl-job-poc/              # XXL-Job 调度中心 docker-compose（含专用 MySQL）
 └── docs/                     # 设计文档与实现计划
 ```
 
@@ -106,6 +108,33 @@ npm run dev
 - 用户名：`admin`
 - 密码：`admin123`
 - 角色：超级管理员（拥有所有权限）
+
+### 端口汇总
+| 服务 | 端口 | 说明 |
+|------|------|------|
+| cms-admin 后端 | 8080 | Spring Boot 应用，API 文档 /swagger-ui.html |
+| cms-admin-web 前端 | 5173 | Vite 开发服务器 |
+| MySQL（业务库） | 3306 | 业务数据库 cms |
+| Redis | 6379 | Token / 缓存 / 分布式锁 |
+| Kafka Broker 0 | 19092 | KRaft 集群节点 0 |
+| Kafka Broker 1 | 19093 | KRaft 集群节点 1 |
+| Kafka Broker 2 | 19094 | KRaft 集群节点 2 |
+| Redpanda Console | 8091 | Kafka 集群管理界面 |
+| XXL-Job Admin | 8092 | 调度中心管理界面（/xxl-job-admin） |
+| XXL-Job MySQL | 3307 | 调度中心专用数据库（不与业务混用） |
+| XXL-Job 执行器 | 9999 | cms-admin 内置执行器 |
+
+### 基础组件启动
+
+Kafka 集群和 XXL-Job 调度中心使用 Docker Compose 部署，详见各目录下 guide.md：
+
+```bash
+# Kafka 3节点集群 + Redpanda Console
+cd kafka-poc && docker-compose up -d
+
+# XXL-Job 调度中心 + 专用 MySQL
+cd xxl-job-poc && docker-compose up -d
+```
 
 ## 功能模块
 

@@ -21,6 +21,8 @@ cms/
 ├── cms-admin/           # 后台管理模块（可执行 JAR，端口 8080）
 ├── cms-api/             # 对外接口模块（预留，空壳）
 ├── cms-admin-web/       # 前端管理后台（Vue3 + Vite，端口 5173）
+├── kafka-poc/           # Kafka 3节点 KRaft 集群 docker-compose（含 Redpanda Console）
+├── xxl-job-poc/         # XXL-Job 调度中心 docker-compose（含专用 MySQL）
 └── docs/superpowers/    # 设计文档与实现计划
 ```
 
@@ -46,16 +48,18 @@ cms/
 
 ### 消息队列（Kafka）
 - 生产者：`KafkaProducerService`（`com.cms.common.kafka`），同步/异步发送，自动 JSON 序列化，统一日志埋点
-- 消费者：`BaseKafkaConsumer` 抽象基类，模板方法模式，统一异常捕获/ACK/日志，业务方实现 `getTopic()` + `handle(String message)`
+- 消费者：`BaseKafkaConsumer` 抽象基类，模板方法模式，统一异常捕获/ACK/日志，业务方实现 `getTopic()`（必须 public，供 SpEL 调用） + `handle(String message)`
 - 消息格式：JSON 字符串，业务方自行解析（跨系统场景不共享实体类）
 - 手动 ACK，消费失败也 ACK（避免阻塞），失败后调用 `handleException` 钩子（可重写实现死信/告警）
 - Topic 命名：`{业务域}.{事件名}`，如 `order.created`、`system.health.check`
+- 本地集群：`kafka-poc/` 目录提供 3 节点 KRaft 集群 docker-compose（含 Redpanda Console，端口 8091），bootstrap-servers: `localhost:19092,localhost:19093,localhost:19094`
 
 ### 定时任务（XXL-Job）
 - 执行器配置：`XxlJobConfig`，配置项前缀 `xxl.job.*`
 - Handler 开发：`@Component` + `@XxlJob("handlerName")` 注解方法
 - Handler 放在各模块的 `job` 包下
 - 调度中心地址、执行器名称、端口等通过配置文件注入
+- 调度中心：`xxl-job-poc/` 目录提供 docker-compose（含专用 MySQL，不与业务混用），地址 http://localhost:8092/xxl-job-admin ，账号 admin/123456
 
 ### 权限体系（RBAC）
 - 用户 → 角色 → 权限（多对多两级关联），多角色取并集
@@ -78,7 +82,26 @@ cd cms-admin && mvn spring-boot:run
 # 数据库初始化
 mysql -u root -p cms < cms-common/src/main/resources/db/schema.sql
 mysql -u root -p cms < cms-common/src/main/resources/db/data.sql
+
+# Kafka 集群
+cd kafka-poc && docker-compose up -d
+
+# XXL-Job 调度中心
+cd xxl-job-poc && docker-compose up -d
 ```
+
+### 端口一览
+| 服务 | 端口 |
+|------|------|
+| cms-admin 后端 | 8080 |
+| 前端 | 5173 |
+| MySQL（业务库 cms） | 3306 |
+| Redis | 6379 |
+| Kafka Broker 0/1/2 | 19092 / 19093 / 19094 |
+| Redpanda Console（Kafka 管理） | 8091 |
+| XXL-Job Admin | 8092 |
+| XXL-Job MySQL（xxl_job 库） | 3307 |
+| XXL-Job 执行器 | 9999 |
 
 ## 前端架构
 
@@ -131,6 +154,7 @@ npm run preview   # 预览构建产物
 **已完成：**
 - **第一阶段**：RBAC 权限体系（用户/角色/权限/登录认证/个人中心/登录日志/字典管理）
 - **基础组件**：Kafka 消息队列封装（生产者服务 + 消费者基类）、XXL-Job 分布式定时任务（含健康检查示例）
+- **基础设施**：`kafka-poc/` Kafka 3节点KRaft集群docker-compose（含Redpanda Console）、`xxl-job-poc/` 调度中心docker-compose（含专用MySQL）
 
 **待开发阶段：**
 - **第二阶段**：电商业务模块（商品管理、订单管理、会员管理）
